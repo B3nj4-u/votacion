@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Table, Button, Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHistory, faPoll } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faHistory, faVoteYea } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import votacionFactory from "../abis/VotacionFactory.json";
 import votacion from "../abis/Votacion.json";
+import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
 
 const { ethers } = require("ethers");
@@ -31,6 +33,7 @@ function InicioLogged() {
   const handleShowCandidatos = () => setShowCandidatos(true);
   const handleCloseHistorial = () => setShowHistorial(false);
   const handleShowHistorial = () => setShowHistorial(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadBlockchainData();
@@ -44,16 +47,20 @@ function InicioLogged() {
   }, [factory]);
 
   async function loadBlockchainData() {
-    const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
-    const networkData = votacionFactory.networks[networkId];
+    try {
+      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
+      const networkData = votacionFactory.networks[networkId];
 
-    if (networkData) {
-      const abi = votacionFactory.abi;
-      const address = networkData.address;
-      const factory = new ethers.Contract(address, abi, wallet);
-      setFactory(factory);
-    } else {
-      window.alert("¡El Smart Contract no se ha desplegado en la red!");
+      if (networkData) {
+        const abi = votacionFactory.abi;
+        const address = networkData.address;
+        const factory = new ethers.Contract(address, abi, wallet);
+        setFactory(factory);
+      } else {
+        window.alert("¡El Smart Contract no se ha desplegado en la red!");
+      }
+    } catch (error) {
+      console.error("Error loading blockchain data: ", error);
     }
   }
 
@@ -112,36 +119,67 @@ function InicioLogged() {
   }
 
   async function verCandidatos(indice) {
-    const votacionContract = new ethers.Contract(
-      votaciones[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const numCandidatos = await votacionContract.obtenerNumCandidatos();
-    const candidatosYVotos = [];
-    for (let i = 0; i < numCandidatos; i++) {
-      const candidato = await votacionContract.candidatos(i);
-      const votos = (await votacionContract.obtenerVotos(i)).toNumber();
-      candidatosYVotos.push({ candidato, votos });
+    try {
+      const votacionContract = new ethers.Contract(
+        votaciones[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const numCandidatos = await votacionContract.obtenerNumCandidatos();
+      const candidatosYVotos = [];
+      for (let i = 0; i < numCandidatos; i++) {
+        const candidato = await votacionContract.candidatos(i);
+        const votos = (await votacionContract.obtenerVotos(i)).toNumber();
+        candidatosYVotos.push({ candidato, votos });
+      }
+      setCandidatosInfo(candidatosYVotos);
+      handleShowCandidatos();
+    } catch (error) {
+      console.error("Error viewing candidates: ", error);
     }
-    setCandidatosInfo(candidatosYVotos);
-    handleShowCandidatos();
   }
 
   async function verResultados(indice) {
-    const votacionContract = new ethers.Contract(
-      votacionesTerminadas[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const numCandidatos = await votacionContract.obtenerNumCandidatos();
-    const candidatosYVotos = [];
-    for (let i = 0; i < numCandidatos; i++) {
-      const candidato = await votacionContract.candidatos(i);
-      const votos = (await votacionContract.obtenerVotos(i)).toNumber();
-      candidatosYVotos.push({ candidato, votos });
+    try {
+      const votacionContract = new ethers.Contract(
+        votacionesTerminadas[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const numCandidatos = await votacionContract.obtenerNumCandidatos();
+      const candidatosYVotos = [];
+      for (let i = 0; i < numCandidatos; i++) {
+        const candidato = await votacionContract.candidatos(i);
+        const votos = (await votacionContract.obtenerVotos(i)).toNumber();
+        candidatosYVotos.push({ candidato, votos });
+      }
+      alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
+    } catch (error) {
+      console.error("Error viewing results: ", error);
     }
-    alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
+  }
+
+  async function irAVotar(indice) {
+    try {
+      const cuentaContract = new ethers.Contract(
+        contractAddress,
+        cuenta.abi,
+        wallet
+      );
+      const haVotado = await cuentaContract.comprobarVoto(
+        votaciones[indice].direccion
+      );
+      if (!haVotado) {
+        navigate("/UsuarioVota", {
+          state: {
+            account: contractAddress,
+            votacionAddress: votaciones[indice].direccion,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Error going to vote: ", error);
+    }
   }
 
   return (
@@ -150,8 +188,7 @@ function InicioLogged() {
       <h1>Bienvenido a VotoNaut, usuario.</h1>
       <h4>Su dirección es: {account}</h4>
       <Button variant="info" onClick={handleShowHistorial}>
-        <FontAwesomeIcon icon={faHistory} />
-        Historial de Votaciones
+        <FontAwesomeIcon icon={faHistory} /> Historial de Votaciones
       </Button>
       <Table striped bordered hover>
         <thead>
@@ -170,7 +207,10 @@ function InicioLogged() {
               <td>{votacion.direccion}</td>
               <td>
                 <Button variant="primary" onClick={() => verCandidatos(index)}>
-                  Ver Candidatos
+                  <FontAwesomeIcon icon={faEye} /> Ver Candidatos
+                </Button>
+                <Button variant="success" onClick={() => irAVotar(index)}>
+                  <FontAwesomeIcon icon={faVoteYea} /> Ir a Votar
                 </Button>
               </td>
             </tr>
@@ -214,8 +254,7 @@ function InicioLogged() {
                       variant="primary"
                       onClick={() => verResultados(index)}
                     >
-                      <FontAwesomeIcon icon={faPoll} />
-                      Ver Resultados
+                      <FontAwesomeIcon icon={faEye} /> Ver Resultados
                     </Button>
                   </td>
                 </tr>
