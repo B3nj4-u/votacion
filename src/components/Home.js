@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import cuentaFactory from "../abis/CuentaFactory.json";
 import cuenta from "../abis/Cuenta.json";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Modal } from "react-bootstrap";
 
 import Navigation from "./Navbar";
 import MyCarousel from "./Carousel";
@@ -23,6 +23,8 @@ function Home() {
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [contract, setContract] = useState(null);
   const [contractAddress, setContractAddress] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [direccionUsuario, setDireccionUsuario] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,34 +56,34 @@ function Home() {
   async function crearNuevaCuenta(texto) {
     // Llama a la función crearCuenta en el contrato
     let tx = await contract.crearCuenta(texto);
-  
+
     // Espera a que la transacción sea minada
     await tx.wait();
-  
+
     // Obtiene el índice del último contrato creado
     let ultimoIndice = await contract.ultimoIndice();
-  
+
     // Resta uno al índice para obtener el índice del contrato que acabamos de crear
     ultimoIndice = ultimoIndice - 1;
-  
+
     // Obtiene la dirección del nuevo contrato Cuenta
     let nuevaCuentaDireccion = await contract.obtenerCuenta(ultimoIndice);
-  
+
     // Crea una nueva instancia del contrato Cuenta
     let nuevaCuenta = new ethers.Contract(
       nuevaCuentaDireccion,
       cuenta.abi,
       wallet
     );
-  
+
     // Ahora puedes llamar a las funciones del contrato Cuenta
     let direccion = await nuevaCuenta.obtenerDireccion();
-  
+
     console.log(
       "El valor _direccion del nuevo contrato Cuenta es: ",
       direccion
     );
-  
+
     // Devuelve el valor _direccion y la dirección del nuevo contrato Cuenta
     return { direccion, nuevaCuentaDireccion };
   }
@@ -94,25 +96,55 @@ function Home() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-  
+
     let texto = `${nombre}${rut}${fechaNacimiento}`;
     texto = texto.replace("-", "");
     texto = texto.replace("-", "");
     console.log(texto);
-  
+
     // Llama a la función crearCuenta del contrato
     try {
       // Aquí es donde llamamos a la función para crear una nueva cuenta
       let { direccion, nuevaCuentaDireccion } = await crearNuevaCuenta(texto);
-  
+
       // Redirige al usuario a InicioLogged y pasa la dirección del contrato Cuenta como estado
-      navigate("/inicio", { state: { account: direccion, contractAddress: nuevaCuentaDireccion } });
+      navigate("/inicio", {
+        state: { account: direccion, contractAddress: nuevaCuentaDireccion },
+      });
     } catch (error) {
       // Muestra un mensaje de error al usuario
       alert(error);
     }
   }
-  
+
+  async function handleLogin(event) {
+    event.preventDefault();
+    try {
+      // Aquí es donde instancias el contrato CuentaFactory y llamas a la función para obtener la dirección del contrato
+      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
+      const networkData = cuentaFactory.networks[networkId];
+
+      if (networkData) {
+        const abi = cuentaFactory.abi;
+        const address = networkData.address;
+        const contract = new ethers.Contract(address, abi, wallet);
+        const direccionContrato = await contract.obtenerDireccionContrato(
+          direccionUsuario
+        );
+        // Luego redirige al usuario a la página de inicio con la dirección del usuario y la dirección del contrato
+        navigate("/inicio", {
+          state: {
+            account: direccionUsuario,
+            contractAddress: direccionContrato,
+          },
+        });
+      } else {
+        window.alert("¡El Smart Contract no se ha desplegado en la red!");
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión: ", error);
+    }
+  }
 
   return (
     <div>
@@ -160,6 +192,30 @@ function Home() {
                   Crear Cuenta
                 </Button>
               </Form>
+              <Button variant="link" onClick={() => setShowModal(true)}>
+                ¿Ya tienes cuenta? Inicia sesión
+              </Button>
+              <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Iniciar Sesión</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form onSubmit={handleLogin}>
+                    <Form.Group controlId="formDireccionUsuario">
+                      <Form.Label>Dirección del Usuario</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Ingresa la dirección del usuario"
+                        value={direccionUsuario}
+                        onChange={(e) => setDireccionUsuario(e.target.value)}
+                      />
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                      Iniciar Sesión
+                    </Button>
+                  </Form>
+                </Modal.Body>
+              </Modal>
             </div>
           </main>
         </div>

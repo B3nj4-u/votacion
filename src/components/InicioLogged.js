@@ -22,6 +22,7 @@ function InicioLogged() {
   const [contractAddress, setContractAddress] = useState(
     location.state.contractAddress
   );
+  console.log(contractAddress);
   const [factory, setFactory] = useState(null);
   const [votaciones, setVotaciones] = useState([]);
   const [votacionesTerminadas, setVotacionesTerminadas] = useState([]);
@@ -68,7 +69,6 @@ function InicioLogged() {
     try {
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndice();
-
       for (let i = 0; i < ultimoIndice; i++) {
         const direccion = await factory.obtenerVotacion(i);
         if (direccion) {
@@ -80,13 +80,11 @@ function InicioLogged() {
           const nombre = await votacionContract.nombre();
           const estado = await votacionContract.obtenerEstado();
           const terminada = await votacionContract.obtenerTerminada();
-
           if (estado && !terminada) {
             votaciones.push({ nombre, direccion });
           }
         }
       }
-
       setVotaciones(votaciones);
     } catch (error) {
       console.error("Error loading votaciones: ", error);
@@ -161,19 +159,21 @@ function InicioLogged() {
 
   async function irAVotar(indice) {
     try {
+      const votacionDireccion = votaciones[indice].direccion;
       const cuentaContract = new ethers.Contract(
         contractAddress,
         cuenta.abi,
         wallet
       );
-      const haVotado = await cuentaContract.comprobarVoto(
-        votaciones[indice].direccion
-      );
-      if (!haVotado) {
-        navigate("/UsuarioVota", {
+      const haVotado = await cuentaContract.comprobarVoto(votacionDireccion);
+      if (haVotado) {
+        alert("Ya has votado en esta votación.");
+      } else {
+        navigate("/votacion", {
           state: {
-            account: contractAddress,
-            votacionAddress: votaciones[indice].direccion,
+            account,
+            votacionAddress: votacionDireccion,
+            contractAddress,
           },
         });
       }
