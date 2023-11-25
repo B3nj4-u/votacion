@@ -25,6 +25,9 @@ function Home() {
   const [contractAddress, setContractAddress] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [direccionUsuario, setDireccionUsuario] = useState("");
+  const handleAdminLogin = () => {
+    navigate("/inicioadmin");
+  };
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -219,6 +222,11 @@ function Home() {
             </div>
           </main>
         </div>
+      </div>
+      <div style={{ position: "fixed", right: 0, bottom: 0, margin: "10px" }}>
+        <Button variant="primary" onClick={handleAdminLogin}>
+          Iniciar sesión como administrador
+        </Button>
       </div>
     </div>
   );

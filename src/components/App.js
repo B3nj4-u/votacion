@@ -6,6 +6,8 @@ import Footer from './Footer';
 import InicioLogged from './InicioLogged';
 import InicioAdmin from './InicioAdmin';
 import UsuarioVota from './UsuarioVota';
+import ConsultaVoto from './ConsultaVoto';
+import Boleta from './Boleta';
 
 class App extends Component {
     
@@ -19,6 +21,8 @@ class App extends Component {
                             <Route path="/inicio" element={<InicioLogged />} />
                             <Route path="/inicioAdmin" element={<InicioAdmin  />} /> 
                             <Route path="/votacion" element={<UsuarioVota />} />
+                            <Route path="/consulta" element={<ConsultaVoto />} />
+                            <Route path="/boleta" element={<Boleta />} />
                         </Routes>
                     </div>
                     <Footer />

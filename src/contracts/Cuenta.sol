@@ -13,10 +13,12 @@ contract Cuenta {
     struct Voto {
         address votacion;
         uint candidato;
+        string nombreCandidato;
+        string nombreVotacion;
     }
 
-    mapping(address => Voto) public votos;
-
+    // Array de structs Voto
+    Voto[] public votos;
 
     // Constructor que recibe una cadena de texto y la convierte en una dirección
     constructor(string memory texto, address _factory) {
@@ -34,10 +36,17 @@ contract Cuenta {
         return haVotado[direccion];
     }
 
-    function votar(address votacion, uint candidato) public {
+    // Función para almacenar el voto de un usuario
+    function votar(address votacion, uint candidato, string memory nombreCandidato, string memory nombreVotacion) public {
         require(!haVotado[msg.sender], "El usuario ya ha votado.");
         haVotado[votacion] = true;
-        votos[msg.sender] = Voto(votacion, candidato);
+        votos.push(Voto(votacion, candidato, nombreCandidato, nombreVotacion));
     }
+
+    // Función para obtener los votos de un usuario
+    function obtenerVotos() public view returns (Voto[] memory) {
+        return votos;
+    }
+
 
 }

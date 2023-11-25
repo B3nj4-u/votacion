@@ -12,10 +12,10 @@ const Navigation = ({ account }) => {
                 <Navbar.Toggle aria-controls="navbar navbar-dark bg-primary" />
                 <Navbar.Collapse id="navbar navbar-dark bg-primary">
                     <Nav className="me-auto">
-                        <Nav.Link as={Link} to="/">Crear Cuenta</Nav.Link>
+                        <Nav.Link as={Link} to="/">Ingresa</Nav.Link>
                     </Nav>
                     <Nav className="me-auto">
-                        <Nav.Link as={Link} to="/inicioadmin">Inicio Admin</Nav.Link>
+                        <Nav.Link as={Link} to="/consulta">Consulta tus votos</Nav.Link>
                     </Nav>
 
                     <Nav>

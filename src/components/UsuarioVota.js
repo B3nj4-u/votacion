@@ -55,17 +55,29 @@ function UsuarioVota() {
         cuenta.abi,
         wallet
       );
-      await cuentaContract.votar(votacionAddress, selectedCandidato);
-
+      const nombreCandidato = candidatos[selectedCandidato];
       const votacionContract = new ethers.Contract(
         votacionAddress,
         votacion.abi,
         wallet
       );
+      const nombreVotacion = await votacionContract.obtenerNombre();
+      await cuentaContract.votar(
+        votacionAddress,
+        selectedCandidato,
+        nombreCandidato,
+        nombreVotacion
+      );
       await votacionContract.votar(selectedCandidato);
 
       alert("Voto registrado con éxito.");
-      navigate("/Inicio", { state: { account, contractAddress } });
+      navigate("/Boleta", {
+        state: {
+          account,
+          votacion: nombreVotacion,
+          candidato: nombreCandidato,
+        },
+      });
     } catch (error) {
       console.error("Error voting: ", error);
       alert("Ya has votado en esta votación.");

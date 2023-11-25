@@ -36,6 +36,11 @@ contract Votacion {
         terminada = true;
     }
 
+    // Función para obtener el nombre de la votación
+    function obtenerNombre() public view returns (string memory) {
+        return nombre;
+    }
+
     // Función para votar
     function votar(uint candidato) public {
         require(estado, "Esta votacion ha sido eliminada");
