@@ -3277,7 +3277,7 @@
                           }
                         ],
                         "functionName": {
-                          "name": "convert_t_contract$_Votacion_$352_to_t_address",
+                          "name": "convert_t_contract$_Votacion_$385_to_t_address",
                           "nodeType": "YulIdentifier",
                           "src": "5464:46:4"
                         },
@@ -3298,7 +3298,7 @@
                 }
               ]
             },
-            "name": "abi_encode_t_contract$_Votacion_$352_to_t_address_fromStack",
+            "name": "abi_encode_t_contract$_Votacion_$385_to_t_address_fromStack",
             "nodeType": "YulFunctionDefinition",
             "parameters": [
               {
@@ -4200,7 +4200,7 @@
                       }
                     ],
                     "functionName": {
-                      "name": "abi_encode_t_contract$_Votacion_$352_to_t_address_fromStack",
+                      "name": "abi_encode_t_contract$_Votacion_$385_to_t_address_fromStack",
                       "nodeType": "YulIdentifier",
                       "src": "7513:59:4"
                     },
@@ -4212,7 +4212,7 @@
                 }
               ]
             },
-            "name": "abi_encode_tuple_t_contract$_Votacion_$352__to_t_address__fromStack_reversed",
+            "name": "abi_encode_tuple_t_contract$_Votacion_$385__to_t_address__fromStack_reversed",
             "nodeType": "YulFunctionDefinition",
             "parameters": [
               {
@@ -6524,7 +6524,7 @@
                       }
                     ],
                     "functionName": {
-                      "name": "convert_t_contract$_Votacion_$352_to_t_uint160",
+                      "name": "convert_t_contract$_Votacion_$385_to_t_uint160",
                       "nodeType": "YulIdentifier",
                       "src": "12396:46:4"
                     },
@@ -6541,7 +6541,7 @@
                 }
               ]
             },
-            "name": "convert_t_contract$_Votacion_$352_to_t_address",
+            "name": "convert_t_contract$_Votacion_$385_to_t_address",
             "nodeType": "YulFunctionDefinition",
             "parameters": [
               {
@@ -6595,7 +6595,7 @@
                 }
               ]
             },
-            "name": "convert_t_contract$_Votacion_$352_to_t_uint160",
+            "name": "convert_t_contract$_Votacion_$385_to_t_uint160",
             "nodeType": "YulFunctionDefinition",
             "parameters": [
               {
@@ -7750,7 +7750,7 @@
           }
         ]
       },
-      "contents": "{\n\n    // string[]\n    function abi_decode_available_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(offset, length, end) -> array {\n        array := allocate_memory(array_allocation_size_t_array$_t_string_memory_ptr_$dyn_memory_ptr(length))\n        let dst := array\n\n        mstore(array, length)\n        dst := add(array, 0x20)\n\n        let src := offset\n        if gt(add(src, mul(length, 0x20)), end) {\n            revert(0, 0)\n        }\n        for { let i := 0 } lt(i, length) { i := add(i, 1) }\n        {\n\n            let innerOffset := calldataload(src)\n            if gt(innerOffset, 0xffffffffffffffff) { revert(0, 0) }\n            let elementPos := add(offset, innerOffset)\n\n            mstore(dst, abi_decode_t_string_memory_ptr(elementPos, end))\n            dst := add(dst, 0x20)\n            src := add(src, 0x20)\n        }\n    }\n\n    function abi_decode_available_length_t_string_memory_ptr(src, length, end) -> array {\n        array := allocate_memory(array_allocation_size_t_string_memory_ptr(length))\n        mstore(array, length)\n        let dst := add(array, 0x20)\n        if gt(add(src, length), end) { revert(0, 0) }\n        copy_calldata_to_memory(src, dst, length)\n    }\n\n    // string[]\n    function abi_decode_t_array$_t_string_memory_ptr_$dyn_memory_ptr(offset, end) -> array {\n        if iszero(slt(add(offset, 0x1f), end)) { revert(0, 0) }\n        let length := calldataload(offset)\n        array := abi_decode_available_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(add(offset, 0x20), length, end)\n    }\n\n    // string\n    function abi_decode_t_string_memory_ptr(offset, end) -> array {\n        if iszero(slt(add(offset, 0x1f), end)) { revert(0, 0) }\n        let length := calldataload(offset)\n        array := abi_decode_available_length_t_string_memory_ptr(add(offset, 0x20), length, end)\n    }\n\n    function abi_decode_t_uint256(offset, end) -> value {\n        value := calldataload(offset)\n        validator_revert_t_uint256(value)\n    }\n\n    function abi_decode_tuple_t_string_memory_ptrt_array$_t_string_memory_ptr_$dyn_memory_ptr(headStart, dataEnd) -> value0, value1 {\n        if slt(sub(dataEnd, headStart), 64) { revert(0, 0) }\n\n        {\n\n            let offset := calldataload(add(headStart, 0))\n            if gt(offset, 0xffffffffffffffff) { revert(0, 0) }\n\n            value0 := abi_decode_t_string_memory_ptr(add(headStart, offset), dataEnd)\n        }\n\n        {\n\n            let offset := calldataload(add(headStart, 32))\n            if gt(offset, 0xffffffffffffffff) { revert(0, 0) }\n\n            value1 := abi_decode_t_array$_t_string_memory_ptr_$dyn_memory_ptr(add(headStart, offset), dataEnd)\n        }\n\n    }\n\n    function abi_decode_tuple_t_uint256(headStart, dataEnd) -> value0 {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n\n        {\n\n            let offset := 0\n\n            value0 := abi_decode_t_uint256(add(headStart, offset), dataEnd)\n        }\n\n    }\n\n    function abi_encodeUpdatedPos_t_address_to_t_address(value0, pos) -> updatedPos {\n        abi_encode_t_address_to_t_address(value0, pos)\n        updatedPos := add(pos, 0x20)\n    }\n\n    function abi_encodeUpdatedPos_t_string_memory_ptr_to_t_string_memory_ptr(value0, pos) -> updatedPos {\n        updatedPos := abi_encode_t_string_memory_ptr_to_t_string_memory_ptr(value0, pos)\n    }\n\n    function abi_encode_t_address_to_t_address(value, pos) {\n        mstore(pos, cleanup_t_address(value))\n    }\n\n    function abi_encode_t_address_to_t_address_fromStack(value, pos) {\n        mstore(pos, cleanup_t_address(value))\n    }\n\n    // address[] -> address[]\n    function abi_encode_t_array$_t_address_$dyn_memory_ptr_to_t_array$_t_address_$dyn_memory_ptr_fromStack(value, pos)  -> end  {\n        let length := array_length_t_array$_t_address_$dyn_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_array$_t_address_$dyn_memory_ptr_fromStack(pos, length)\n        let baseRef := array_dataslot_t_array$_t_address_$dyn_memory_ptr(value)\n        let srcPtr := baseRef\n        for { let i := 0 } lt(i, length) { i := add(i, 1) }\n        {\n            let elementValue0 := mload(srcPtr)\n            pos := abi_encodeUpdatedPos_t_address_to_t_address(elementValue0, pos)\n            srcPtr := array_nextElement_t_array$_t_address_$dyn_memory_ptr(srcPtr)\n        }\n        end := pos\n    }\n\n    // string[] -> string[]\n    function abi_encode_t_array$_t_string_memory_ptr_$dyn_memory_ptr_to_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(value, pos)  -> end  {\n        let length := array_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(pos, length)\n        let headStart := pos\n        let tail := add(pos, mul(length, 0x20))\n        let baseRef := array_dataslot_t_array$_t_string_memory_ptr_$dyn_memory_ptr(value)\n        let srcPtr := baseRef\n        for { let i := 0 } lt(i, length) { i := add(i, 1) }\n        {\n            mstore(pos, sub(tail, headStart))\n            let elementValue0 := mload(srcPtr)\n            tail := abi_encodeUpdatedPos_t_string_memory_ptr_to_t_string_memory_ptr(elementValue0, tail)\n            srcPtr := array_nextElement_t_array$_t_string_memory_ptr_$dyn_memory_ptr(srcPtr)\n            pos := add(pos, 0x20)\n        }\n        pos := tail\n        end := pos\n    }\n\n    function abi_encode_t_contract$_Votacion_$352_to_t_address_fromStack(value, pos) {\n        mstore(pos, convert_t_contract$_Votacion_$352_to_t_address(value))\n    }\n\n    function abi_encode_t_string_memory_ptr_to_t_string_memory_ptr(value, pos) -> end {\n        let length := array_length_t_string_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_string_memory_ptr(pos, length)\n        copy_memory_to_memory(add(value, 0x20), pos, length)\n        end := add(pos, round_up_to_mul_of_32(length))\n    }\n\n    function abi_encode_t_string_memory_ptr_to_t_string_memory_ptr_fromStack(value, pos) -> end {\n        let length := array_length_t_string_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_string_memory_ptr_fromStack(pos, length)\n        copy_memory_to_memory(add(value, 0x20), pos, length)\n        end := add(pos, round_up_to_mul_of_32(length))\n    }\n\n    function abi_encode_t_stringliteral_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa_to_t_string_memory_ptr_fromStack(pos) -> end {\n        pos := array_storeLengthForEncoding_t_string_memory_ptr_fromStack(pos, 21)\n        store_literal_in_memory_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa(pos)\n        end := add(pos, 32)\n    }\n\n    function abi_encode_t_uint256_to_t_uint256_fromStack(value, pos) {\n        mstore(pos, cleanup_t_uint256(value))\n    }\n\n    function abi_encode_tuple_t_address__to_t_address__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        abi_encode_t_address_to_t_address_fromStack(value0,  add(headStart, 0))\n\n    }\n\n    function abi_encode_tuple_t_array$_t_address_$dyn_memory_ptr__to_t_array$_t_address_$dyn_memory_ptr__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        mstore(add(headStart, 0), sub(tail, headStart))\n        tail := abi_encode_t_array$_t_address_$dyn_memory_ptr_to_t_array$_t_address_$dyn_memory_ptr_fromStack(value0,  tail)\n\n    }\n\n    function abi_encode_tuple_t_contract$_Votacion_$352__to_t_address__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        abi_encode_t_contract$_Votacion_$352_to_t_address_fromStack(value0,  add(headStart, 0))\n\n    }\n\n    function abi_encode_tuple_t_string_memory_ptr_t_array$_t_string_memory_ptr_$dyn_memory_ptr_t_address__to_t_string_memory_ptr_t_array$_t_string_memory_ptr_$dyn_memory_ptr_t_address__fromStack_reversed(headStart , value2, value1, value0) -> tail {\n        tail := add(headStart, 96)\n\n        mstore(add(headStart, 0), sub(tail, headStart))\n        tail := abi_encode_t_string_memory_ptr_to_t_string_memory_ptr_fromStack(value0,  tail)\n\n        mstore(add(headStart, 32), sub(tail, headStart))\n        tail := abi_encode_t_array$_t_string_memory_ptr_$dyn_memory_ptr_to_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(value1,  tail)\n\n        abi_encode_t_address_to_t_address_fromStack(value2,  add(headStart, 64))\n\n    }\n\n    function abi_encode_tuple_t_stringliteral_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa__to_t_string_memory_ptr__fromStack_reversed(headStart ) -> tail {\n        tail := add(headStart, 32)\n\n        mstore(add(headStart, 0), sub(tail, headStart))\n        tail := abi_encode_t_stringliteral_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa_to_t_string_memory_ptr_fromStack( tail)\n\n    }\n\n    function abi_encode_tuple_t_uint256__to_t_uint256__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        abi_encode_t_uint256_to_t_uint256_fromStack(value0,  add(headStart, 0))\n\n    }\n\n    function allocate_memory(size) -> memPtr {\n        memPtr := allocate_unbounded()\n        finalize_allocation(memPtr, size)\n    }\n\n    function allocate_unbounded() -> memPtr {\n        memPtr := mload(64)\n    }\n\n    function array_allocation_size_t_array$_t_string_memory_ptr_$dyn_memory_ptr(length) -> size {\n        // Make sure we can allocate memory without overflow\n        if gt(length, 0xffffffffffffffff) { panic_error_0x41() }\n\n        size := mul(length, 0x20)\n\n        // add length slot\n        size := add(size, 0x20)\n\n    }\n\n    function array_allocation_size_t_string_memory_ptr(length) -> size {\n        // Make sure we can allocate memory without overflow\n        if gt(length, 0xffffffffffffffff) { panic_error_0x41() }\n\n        size := round_up_to_mul_of_32(length)\n\n        // add length slot\n        size := add(size, 0x20)\n\n    }\n\n    function array_dataslot_t_array$_t_address_$dyn_memory_ptr(ptr) -> data {\n        data := ptr\n\n        data := add(ptr, 0x20)\n\n    }\n\n    function array_dataslot_t_array$_t_string_memory_ptr_$dyn_memory_ptr(ptr) -> data {\n        data := ptr\n\n        data := add(ptr, 0x20)\n\n    }\n\n    function array_length_t_array$_t_address_$dyn_memory_ptr(value) -> length {\n\n        length := mload(value)\n\n    }\n\n    function array_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(value) -> length {\n\n        length := mload(value)\n\n    }\n\n    function array_length_t_string_memory_ptr(value) -> length {\n\n        length := mload(value)\n\n    }\n\n    function array_nextElement_t_array$_t_address_$dyn_memory_ptr(ptr) -> next {\n        next := add(ptr, 0x20)\n    }\n\n    function array_nextElement_t_array$_t_string_memory_ptr_$dyn_memory_ptr(ptr) -> next {\n        next := add(ptr, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_array$_t_address_$dyn_memory_ptr_fromStack(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_string_memory_ptr(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_string_memory_ptr_fromStack(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function checked_add_t_uint256(x, y) -> sum {\n        x := cleanup_t_uint256(x)\n        y := cleanup_t_uint256(y)\n\n        // overflow, if x > (maxValue - y)\n        if gt(x, sub(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff, y)) { panic_error_0x11() }\n\n        sum := add(x, y)\n    }\n\n    function checked_sub_t_uint256(x, y) -> diff {\n        x := cleanup_t_uint256(x)\n        y := cleanup_t_uint256(y)\n\n        if lt(x, y) { panic_error_0x11() }\n\n        diff := sub(x, y)\n    }\n\n    function cleanup_t_address(value) -> cleaned {\n        cleaned := cleanup_t_uint160(value)\n    }\n\n    function cleanup_t_uint160(value) -> cleaned {\n        cleaned := and(value, 0xffffffffffffffffffffffffffffffffffffffff)\n    }\n\n    function cleanup_t_uint256(value) -> cleaned {\n        cleaned := value\n    }\n\n    function convert_t_contract$_Votacion_$352_to_t_address(value) -> converted {\n        converted := convert_t_contract$_Votacion_$352_to_t_uint160(value)\n    }\n\n    function convert_t_contract$_Votacion_$352_to_t_uint160(value) -> converted {\n        converted := cleanup_t_uint160(value)\n    }\n\n    function copy_calldata_to_memory(src, dst, length) {\n        calldatacopy(dst, src, length)\n        // clear end\n        mstore(add(dst, length), 0)\n    }\n\n    function copy_memory_to_memory(src, dst, length) {\n        let i := 0\n        for { } lt(i, length) { i := add(i, 32) }\n        {\n            mstore(add(dst, i), mload(add(src, i)))\n        }\n        if gt(i, length)\n        {\n            // clear end\n            mstore(add(dst, length), 0)\n        }\n    }\n\n    function finalize_allocation(memPtr, size) {\n        let newFreePtr := add(memPtr, round_up_to_mul_of_32(size))\n        // protect against overflow\n        if or(gt(newFreePtr, 0xffffffffffffffff), lt(newFreePtr, memPtr)) { panic_error_0x41() }\n        mstore(64, newFreePtr)\n    }\n\n    function increment_t_uint256(value) -> ret {\n        value := cleanup_t_uint256(value)\n        if eq(value, 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) { panic_error_0x11() }\n        ret := add(value, 1)\n    }\n\n    function panic_error_0x11() {\n        mstore(0, 35408467139433450592217433187231851964531694900788300625387963629091585785856)\n        mstore(4, 0x11)\n        revert(0, 0x24)\n    }\n\n    function panic_error_0x41() {\n        mstore(0, 35408467139433450592217433187231851964531694900788300625387963629091585785856)\n        mstore(4, 0x41)\n        revert(0, 0x24)\n    }\n\n    function round_up_to_mul_of_32(value) -> result {\n        result := and(add(value, 31), not(31))\n    }\n\n    function store_literal_in_memory_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa(memPtr) {\n\n        mstore(add(memPtr, 0), \"Indice fuera de rango\")\n\n    }\n\n    function validator_revert_t_uint256(value) {\n        if iszero(eq(value, cleanup_t_uint256(value))) { revert(0, 0) }\n    }\n\n}\n",
+      "contents": "{\n\n    // string[]\n    function abi_decode_available_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(offset, length, end) -> array {\n        array := allocate_memory(array_allocation_size_t_array$_t_string_memory_ptr_$dyn_memory_ptr(length))\n        let dst := array\n\n        mstore(array, length)\n        dst := add(array, 0x20)\n\n        let src := offset\n        if gt(add(src, mul(length, 0x20)), end) {\n            revert(0, 0)\n        }\n        for { let i := 0 } lt(i, length) { i := add(i, 1) }\n        {\n\n            let innerOffset := calldataload(src)\n            if gt(innerOffset, 0xffffffffffffffff) { revert(0, 0) }\n            let elementPos := add(offset, innerOffset)\n\n            mstore(dst, abi_decode_t_string_memory_ptr(elementPos, end))\n            dst := add(dst, 0x20)\n            src := add(src, 0x20)\n        }\n    }\n\n    function abi_decode_available_length_t_string_memory_ptr(src, length, end) -> array {\n        array := allocate_memory(array_allocation_size_t_string_memory_ptr(length))\n        mstore(array, length)\n        let dst := add(array, 0x20)\n        if gt(add(src, length), end) { revert(0, 0) }\n        copy_calldata_to_memory(src, dst, length)\n    }\n\n    // string[]\n    function abi_decode_t_array$_t_string_memory_ptr_$dyn_memory_ptr(offset, end) -> array {\n        if iszero(slt(add(offset, 0x1f), end)) { revert(0, 0) }\n        let length := calldataload(offset)\n        array := abi_decode_available_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(add(offset, 0x20), length, end)\n    }\n\n    // string\n    function abi_decode_t_string_memory_ptr(offset, end) -> array {\n        if iszero(slt(add(offset, 0x1f), end)) { revert(0, 0) }\n        let length := calldataload(offset)\n        array := abi_decode_available_length_t_string_memory_ptr(add(offset, 0x20), length, end)\n    }\n\n    function abi_decode_t_uint256(offset, end) -> value {\n        value := calldataload(offset)\n        validator_revert_t_uint256(value)\n    }\n\n    function abi_decode_tuple_t_string_memory_ptrt_array$_t_string_memory_ptr_$dyn_memory_ptr(headStart, dataEnd) -> value0, value1 {\n        if slt(sub(dataEnd, headStart), 64) { revert(0, 0) }\n\n        {\n\n            let offset := calldataload(add(headStart, 0))\n            if gt(offset, 0xffffffffffffffff) { revert(0, 0) }\n\n            value0 := abi_decode_t_string_memory_ptr(add(headStart, offset), dataEnd)\n        }\n\n        {\n\n            let offset := calldataload(add(headStart, 32))\n            if gt(offset, 0xffffffffffffffff) { revert(0, 0) }\n\n            value1 := abi_decode_t_array$_t_string_memory_ptr_$dyn_memory_ptr(add(headStart, offset), dataEnd)\n        }\n\n    }\n\n    function abi_decode_tuple_t_uint256(headStart, dataEnd) -> value0 {\n        if slt(sub(dataEnd, headStart), 32) { revert(0, 0) }\n\n        {\n\n            let offset := 0\n\n            value0 := abi_decode_t_uint256(add(headStart, offset), dataEnd)\n        }\n\n    }\n\n    function abi_encodeUpdatedPos_t_address_to_t_address(value0, pos) -> updatedPos {\n        abi_encode_t_address_to_t_address(value0, pos)\n        updatedPos := add(pos, 0x20)\n    }\n\n    function abi_encodeUpdatedPos_t_string_memory_ptr_to_t_string_memory_ptr(value0, pos) -> updatedPos {\n        updatedPos := abi_encode_t_string_memory_ptr_to_t_string_memory_ptr(value0, pos)\n    }\n\n    function abi_encode_t_address_to_t_address(value, pos) {\n        mstore(pos, cleanup_t_address(value))\n    }\n\n    function abi_encode_t_address_to_t_address_fromStack(value, pos) {\n        mstore(pos, cleanup_t_address(value))\n    }\n\n    // address[] -> address[]\n    function abi_encode_t_array$_t_address_$dyn_memory_ptr_to_t_array$_t_address_$dyn_memory_ptr_fromStack(value, pos)  -> end  {\n        let length := array_length_t_array$_t_address_$dyn_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_array$_t_address_$dyn_memory_ptr_fromStack(pos, length)\n        let baseRef := array_dataslot_t_array$_t_address_$dyn_memory_ptr(value)\n        let srcPtr := baseRef\n        for { let i := 0 } lt(i, length) { i := add(i, 1) }\n        {\n            let elementValue0 := mload(srcPtr)\n            pos := abi_encodeUpdatedPos_t_address_to_t_address(elementValue0, pos)\n            srcPtr := array_nextElement_t_array$_t_address_$dyn_memory_ptr(srcPtr)\n        }\n        end := pos\n    }\n\n    // string[] -> string[]\n    function abi_encode_t_array$_t_string_memory_ptr_$dyn_memory_ptr_to_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(value, pos)  -> end  {\n        let length := array_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(pos, length)\n        let headStart := pos\n        let tail := add(pos, mul(length, 0x20))\n        let baseRef := array_dataslot_t_array$_t_string_memory_ptr_$dyn_memory_ptr(value)\n        let srcPtr := baseRef\n        for { let i := 0 } lt(i, length) { i := add(i, 1) }\n        {\n            mstore(pos, sub(tail, headStart))\n            let elementValue0 := mload(srcPtr)\n            tail := abi_encodeUpdatedPos_t_string_memory_ptr_to_t_string_memory_ptr(elementValue0, tail)\n            srcPtr := array_nextElement_t_array$_t_string_memory_ptr_$dyn_memory_ptr(srcPtr)\n            pos := add(pos, 0x20)\n        }\n        pos := tail\n        end := pos\n    }\n\n    function abi_encode_t_contract$_Votacion_$385_to_t_address_fromStack(value, pos) {\n        mstore(pos, convert_t_contract$_Votacion_$385_to_t_address(value))\n    }\n\n    function abi_encode_t_string_memory_ptr_to_t_string_memory_ptr(value, pos) -> end {\n        let length := array_length_t_string_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_string_memory_ptr(pos, length)\n        copy_memory_to_memory(add(value, 0x20), pos, length)\n        end := add(pos, round_up_to_mul_of_32(length))\n    }\n\n    function abi_encode_t_string_memory_ptr_to_t_string_memory_ptr_fromStack(value, pos) -> end {\n        let length := array_length_t_string_memory_ptr(value)\n        pos := array_storeLengthForEncoding_t_string_memory_ptr_fromStack(pos, length)\n        copy_memory_to_memory(add(value, 0x20), pos, length)\n        end := add(pos, round_up_to_mul_of_32(length))\n    }\n\n    function abi_encode_t_stringliteral_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa_to_t_string_memory_ptr_fromStack(pos) -> end {\n        pos := array_storeLengthForEncoding_t_string_memory_ptr_fromStack(pos, 21)\n        store_literal_in_memory_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa(pos)\n        end := add(pos, 32)\n    }\n\n    function abi_encode_t_uint256_to_t_uint256_fromStack(value, pos) {\n        mstore(pos, cleanup_t_uint256(value))\n    }\n\n    function abi_encode_tuple_t_address__to_t_address__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        abi_encode_t_address_to_t_address_fromStack(value0,  add(headStart, 0))\n\n    }\n\n    function abi_encode_tuple_t_array$_t_address_$dyn_memory_ptr__to_t_array$_t_address_$dyn_memory_ptr__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        mstore(add(headStart, 0), sub(tail, headStart))\n        tail := abi_encode_t_array$_t_address_$dyn_memory_ptr_to_t_array$_t_address_$dyn_memory_ptr_fromStack(value0,  tail)\n\n    }\n\n    function abi_encode_tuple_t_contract$_Votacion_$385__to_t_address__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        abi_encode_t_contract$_Votacion_$385_to_t_address_fromStack(value0,  add(headStart, 0))\n\n    }\n\n    function abi_encode_tuple_t_string_memory_ptr_t_array$_t_string_memory_ptr_$dyn_memory_ptr_t_address__to_t_string_memory_ptr_t_array$_t_string_memory_ptr_$dyn_memory_ptr_t_address__fromStack_reversed(headStart , value2, value1, value0) -> tail {\n        tail := add(headStart, 96)\n\n        mstore(add(headStart, 0), sub(tail, headStart))\n        tail := abi_encode_t_string_memory_ptr_to_t_string_memory_ptr_fromStack(value0,  tail)\n\n        mstore(add(headStart, 32), sub(tail, headStart))\n        tail := abi_encode_t_array$_t_string_memory_ptr_$dyn_memory_ptr_to_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(value1,  tail)\n\n        abi_encode_t_address_to_t_address_fromStack(value2,  add(headStart, 64))\n\n    }\n\n    function abi_encode_tuple_t_stringliteral_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa__to_t_string_memory_ptr__fromStack_reversed(headStart ) -> tail {\n        tail := add(headStart, 32)\n\n        mstore(add(headStart, 0), sub(tail, headStart))\n        tail := abi_encode_t_stringliteral_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa_to_t_string_memory_ptr_fromStack( tail)\n\n    }\n\n    function abi_encode_tuple_t_uint256__to_t_uint256__fromStack_reversed(headStart , value0) -> tail {\n        tail := add(headStart, 32)\n\n        abi_encode_t_uint256_to_t_uint256_fromStack(value0,  add(headStart, 0))\n\n    }\n\n    function allocate_memory(size) -> memPtr {\n        memPtr := allocate_unbounded()\n        finalize_allocation(memPtr, size)\n    }\n\n    function allocate_unbounded() -> memPtr {\n        memPtr := mload(64)\n    }\n\n    function array_allocation_size_t_array$_t_string_memory_ptr_$dyn_memory_ptr(length) -> size {\n        // Make sure we can allocate memory without overflow\n        if gt(length, 0xffffffffffffffff) { panic_error_0x41() }\n\n        size := mul(length, 0x20)\n\n        // add length slot\n        size := add(size, 0x20)\n\n    }\n\n    function array_allocation_size_t_string_memory_ptr(length) -> size {\n        // Make sure we can allocate memory without overflow\n        if gt(length, 0xffffffffffffffff) { panic_error_0x41() }\n\n        size := round_up_to_mul_of_32(length)\n\n        // add length slot\n        size := add(size, 0x20)\n\n    }\n\n    function array_dataslot_t_array$_t_address_$dyn_memory_ptr(ptr) -> data {\n        data := ptr\n\n        data := add(ptr, 0x20)\n\n    }\n\n    function array_dataslot_t_array$_t_string_memory_ptr_$dyn_memory_ptr(ptr) -> data {\n        data := ptr\n\n        data := add(ptr, 0x20)\n\n    }\n\n    function array_length_t_array$_t_address_$dyn_memory_ptr(value) -> length {\n\n        length := mload(value)\n\n    }\n\n    function array_length_t_array$_t_string_memory_ptr_$dyn_memory_ptr(value) -> length {\n\n        length := mload(value)\n\n    }\n\n    function array_length_t_string_memory_ptr(value) -> length {\n\n        length := mload(value)\n\n    }\n\n    function array_nextElement_t_array$_t_address_$dyn_memory_ptr(ptr) -> next {\n        next := add(ptr, 0x20)\n    }\n\n    function array_nextElement_t_array$_t_string_memory_ptr_$dyn_memory_ptr(ptr) -> next {\n        next := add(ptr, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_array$_t_address_$dyn_memory_ptr_fromStack(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_array$_t_string_memory_ptr_$dyn_memory_ptr_fromStack(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_string_memory_ptr(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function array_storeLengthForEncoding_t_string_memory_ptr_fromStack(pos, length) -> updated_pos {\n        mstore(pos, length)\n        updated_pos := add(pos, 0x20)\n    }\n\n    function checked_add_t_uint256(x, y) -> sum {\n        x := cleanup_t_uint256(x)\n        y := cleanup_t_uint256(y)\n\n        // overflow, if x > (maxValue - y)\n        if gt(x, sub(0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff, y)) { panic_error_0x11() }\n\n        sum := add(x, y)\n    }\n\n    function checked_sub_t_uint256(x, y) -> diff {\n        x := cleanup_t_uint256(x)\n        y := cleanup_t_uint256(y)\n\n        if lt(x, y) { panic_error_0x11() }\n\n        diff := sub(x, y)\n    }\n\n    function cleanup_t_address(value) -> cleaned {\n        cleaned := cleanup_t_uint160(value)\n    }\n\n    function cleanup_t_uint160(value) -> cleaned {\n        cleaned := and(value, 0xffffffffffffffffffffffffffffffffffffffff)\n    }\n\n    function cleanup_t_uint256(value) -> cleaned {\n        cleaned := value\n    }\n\n    function convert_t_contract$_Votacion_$385_to_t_address(value) -> converted {\n        converted := convert_t_contract$_Votacion_$385_to_t_uint160(value)\n    }\n\n    function convert_t_contract$_Votacion_$385_to_t_uint160(value) -> converted {\n        converted := cleanup_t_uint160(value)\n    }\n\n    function copy_calldata_to_memory(src, dst, length) {\n        calldatacopy(dst, src, length)\n        // clear end\n        mstore(add(dst, length), 0)\n    }\n\n    function copy_memory_to_memory(src, dst, length) {\n        let i := 0\n        for { } lt(i, length) { i := add(i, 32) }\n        {\n            mstore(add(dst, i), mload(add(src, i)))\n        }\n        if gt(i, length)\n        {\n            // clear end\n            mstore(add(dst, length), 0)\n        }\n    }\n\n    function finalize_allocation(memPtr, size) {\n        let newFreePtr := add(memPtr, round_up_to_mul_of_32(size))\n        // protect against overflow\n        if or(gt(newFreePtr, 0xffffffffffffffff), lt(newFreePtr, memPtr)) { panic_error_0x41() }\n        mstore(64, newFreePtr)\n    }\n\n    function increment_t_uint256(value) -> ret {\n        value := cleanup_t_uint256(value)\n        if eq(value, 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff) { panic_error_0x11() }\n        ret := add(value, 1)\n    }\n\n    function panic_error_0x11() {\n        mstore(0, 35408467139433450592217433187231851964531694900788300625387963629091585785856)\n        mstore(4, 0x11)\n        revert(0, 0x24)\n    }\n\n    function panic_error_0x41() {\n        mstore(0, 35408467139433450592217433187231851964531694900788300625387963629091585785856)\n        mstore(4, 0x41)\n        revert(0, 0x24)\n    }\n\n    function round_up_to_mul_of_32(value) -> result {\n        result := and(add(value, 31), not(31))\n    }\n\n    function store_literal_in_memory_6c9fe448663842ab74eeb3509e6cc22a14ce31bfdc53adba915c2f25246c1efa(memPtr) {\n\n        mstore(add(memPtr, 0), \"Indice fuera de rango\")\n\n    }\n\n    function validator_revert_t_uint256(value) {\n        if iszero(eq(value, cleanup_t_uint256(value))) { revert(0, 0) }\n    }\n\n}\n",
       "id": 4,
       "language": "Yul",
       "name": "#utility.yul"
@@ -7764,18 +7764,18 @@
     "absolutePath": "project:/src/contracts/VotacionFactory.sol",
     "exportedSymbols": {
       "Votacion": [
-        352
+        385
       ],
       "VotacionFactory": [
-        581
+        614
       ]
     },
-    "id": 582,
+    "id": 615,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 354,
+        "id": 387,
         "literals": [
           "solidity",
           "^",
@@ -7788,11 +7788,11 @@
       {
         "absolutePath": "project:/src/contracts/Votacion.sol",
         "file": "./Votacion.sol",
-        "id": 355,
+        "id": 388,
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
-        "scope": 582,
-        "sourceUnit": 353,
+        "scope": 615,
+        "sourceUnit": 386,
         "src": "60:24:3",
         "symbolAliases": [],
         "unitAlias": ""
@@ -7801,13 +7801,13 @@
         "abstract": false,
         "baseContracts": [],
         "contractDependencies": [
-          352
+          385
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 581,
+        "id": 614,
         "linearizedBaseContracts": [
-          581
+          614
         ],
         "name": "VotacionFactory",
         "nameLocation": "97:15:3",
@@ -7816,12 +7816,12 @@
           {
             "constant": false,
             "functionSelector": "5acf57b5",
-            "id": 358,
+            "id": 391,
             "mutability": "mutable",
             "name": "votaciones",
             "nameLocation": "206:10:3",
             "nodeType": "VariableDeclaration",
-            "scope": 581,
+            "scope": 614,
             "src": "189:27:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -7831,7 +7831,7 @@
             },
             "typeName": {
               "baseType": {
-                "id": 356,
+                "id": 389,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "189:7:3",
@@ -7841,7 +7841,7 @@
                   "typeString": "address"
                 }
               },
-              "id": 357,
+              "id": 390,
               "nodeType": "ArrayTypeName",
               "src": "189:9:3",
               "typeDescriptions": {
@@ -7854,12 +7854,12 @@
           {
             "constant": false,
             "functionSelector": "822fdc83",
-            "id": 361,
+            "id": 394,
             "mutability": "mutable",
             "name": "votacionesTerminadas",
             "nameLocation": "320:20:3",
             "nodeType": "VariableDeclaration",
-            "scope": 581,
+            "scope": 614,
             "src": "303:37:3",
             "stateVariable": true,
             "storageLocation": "default",
@@ -7869,7 +7869,7 @@
             },
             "typeName": {
               "baseType": {
-                "id": 359,
+                "id": 392,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "303:7:3",
@@ -7879,7 +7879,7 @@
                   "typeString": "address"
                 }
               },
-              "id": 360,
+              "id": 393,
               "nodeType": "ArrayTypeName",
               "src": "303:9:3",
               "typeDescriptions": {
@@ -7891,59 +7891,59 @@
           },
           {
             "body": {
-              "id": 392,
+              "id": 425,
               "nodeType": "Block",
               "src": "477:131:3",
               "statements": [
                 {
                   "assignments": [
-                    371
+                    404
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 371,
+                      "id": 404,
                       "mutability": "mutable",
                       "name": "votacion",
                       "nameLocation": "497:8:3",
                       "nodeType": "VariableDeclaration",
-                      "scope": 392,
+                      "scope": 425,
                       "src": "488:17:3",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Votacion_$352",
+                        "typeIdentifier": "t_contract$_Votacion_$385",
                         "typeString": "contract Votacion"
                       },
                       "typeName": {
-                        "id": 370,
+                        "id": 403,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 369,
+                          "id": 402,
                           "name": "Votacion",
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 352,
+                          "referencedDeclaration": 385,
                           "src": "488:8:3"
                         },
-                        "referencedDeclaration": 352,
+                        "referencedDeclaration": 385,
                         "src": "488:8:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Votacion_$352",
+                          "typeIdentifier": "t_contract$_Votacion_$385",
                           "typeString": "contract Votacion"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 382,
+                  "id": 415,
                   "initialValue": {
                     "arguments": [
                       {
-                        "id": 375,
+                        "id": 408,
                         "name": "nombre",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 363,
+                        "referencedDeclaration": 396,
                         "src": "521:6:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
@@ -7951,11 +7951,11 @@
                         }
                       },
                       {
-                        "id": 376,
+                        "id": 409,
                         "name": "candidatos",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 366,
+                        "referencedDeclaration": 399,
                         "src": "529:10:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_string_memory_ptr_$dyn_memory_ptr",
@@ -7965,14 +7965,14 @@
                       {
                         "arguments": [
                           {
-                            "id": 379,
+                            "id": 412,
                             "name": "this",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
                             "referencedDeclaration": 4294967268,
                             "src": "549:4:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_VotacionFactory_$581",
+                              "typeIdentifier": "t_contract$_VotacionFactory_$614",
                               "typeString": "contract VotacionFactory"
                             }
                           }
@@ -7980,11 +7980,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_VotacionFactory_$581",
+                              "typeIdentifier": "t_contract$_VotacionFactory_$614",
                               "typeString": "contract VotacionFactory"
                             }
                           ],
-                          "id": 378,
+                          "id": 411,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -7996,14 +7996,14 @@
                             "typeString": "type(address)"
                           },
                           "typeName": {
-                            "id": 377,
+                            "id": 410,
                             "name": "address",
                             "nodeType": "ElementaryTypeName",
                             "src": "541:7:3",
                             "typeDescriptions": {}
                           }
                         },
-                        "id": 380,
+                        "id": 413,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -8034,7 +8034,7 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 374,
+                      "id": 407,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -8042,28 +8042,28 @@
                       "nodeType": "NewExpression",
                       "src": "508:12:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_array$_t_string_memory_ptr_$dyn_memory_ptr_$_t_address_$returns$_t_contract$_Votacion_$352_$",
+                        "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_array$_t_string_memory_ptr_$dyn_memory_ptr_$_t_address_$returns$_t_contract$_Votacion_$385_$",
                         "typeString": "function (string memory,string memory[] memory,address) returns (contract Votacion)"
                       },
                       "typeName": {
-                        "id": 373,
+                        "id": 406,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 372,
+                          "id": 405,
                           "name": "Votacion",
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 352,
+                          "referencedDeclaration": 385,
                           "src": "512:8:3"
                         },
-                        "referencedDeclaration": 352,
+                        "referencedDeclaration": 385,
                         "src": "512:8:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Votacion_$352",
+                          "typeIdentifier": "t_contract$_Votacion_$385",
                           "typeString": "contract Votacion"
                         }
                       }
                     },
-                    "id": 381,
+                    "id": 414,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -8074,7 +8074,7 @@
                     "src": "508:47:3",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Votacion_$352",
+                      "typeIdentifier": "t_contract$_Votacion_$385",
                       "typeString": "contract Votacion"
                     }
                   },
@@ -8087,14 +8087,14 @@
                       {
                         "arguments": [
                           {
-                            "id": 388,
+                            "id": 421,
                             "name": "votacion",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 371,
+                            "referencedDeclaration": 404,
                             "src": "590:8:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Votacion_$352",
+                              "typeIdentifier": "t_contract$_Votacion_$385",
                               "typeString": "contract Votacion"
                             }
                           }
@@ -8102,11 +8102,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Votacion_$352",
+                              "typeIdentifier": "t_contract$_Votacion_$385",
                               "typeString": "contract Votacion"
                             }
                           ],
-                          "id": 387,
+                          "id": 420,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -8118,14 +8118,14 @@
                             "typeString": "type(address)"
                           },
                           "typeName": {
-                            "id": 386,
+                            "id": 419,
                             "name": "address",
                             "nodeType": "ElementaryTypeName",
                             "src": "582:7:3",
                             "typeDescriptions": {}
                           }
                         },
-                        "id": 389,
+                        "id": 422,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -8149,18 +8149,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 383,
+                        "id": 416,
                         "name": "votaciones",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 358,
+                        "referencedDeclaration": 391,
                         "src": "566:10:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_storage",
                           "typeString": "address[] storage ref"
                         }
                       },
-                      "id": 385,
+                      "id": 418,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -8173,7 +8173,7 @@
                         "typeString": "function (address[] storage pointer,address)"
                       }
                     },
-                    "id": 390,
+                    "id": 423,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -8188,14 +8188,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 391,
+                  "id": 424,
                   "nodeType": "ExpressionStatement",
                   "src": "566:34:3"
                 }
               ]
             },
             "functionSelector": "5a785c96",
-            "id": 393,
+            "id": 426,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -8203,17 +8203,17 @@
             "nameLocation": "406:13:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 367,
+              "id": 400,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 363,
+                  "id": 396,
                   "mutability": "mutable",
                   "name": "nombre",
                   "nameLocation": "434:6:3",
                   "nodeType": "VariableDeclaration",
-                  "scope": 393,
+                  "scope": 426,
                   "src": "420:20:3",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -8222,7 +8222,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 362,
+                    "id": 395,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "420:6:3",
@@ -8235,12 +8235,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 366,
+                  "id": 399,
                   "mutability": "mutable",
                   "name": "candidatos",
                   "nameLocation": "458:10:3",
                   "nodeType": "VariableDeclaration",
-                  "scope": 393,
+                  "scope": 426,
                   "src": "442:26:3",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -8250,7 +8250,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 364,
+                      "id": 397,
                       "name": "string",
                       "nodeType": "ElementaryTypeName",
                       "src": "442:6:3",
@@ -8259,7 +8259,7 @@
                         "typeString": "string"
                       }
                     },
-                    "id": 365,
+                    "id": 398,
                     "nodeType": "ArrayTypeName",
                     "src": "442:8:3",
                     "typeDescriptions": {
@@ -8273,12 +8273,12 @@
               "src": "419:50:3"
             },
             "returnParameters": {
-              "id": 368,
+              "id": 401,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "477:0:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "397:211:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -8286,32 +8286,32 @@
           },
           {
             "body": {
-              "id": 401,
+              "id": 434,
               "nodeType": "Block",
               "src": "735:36:3",
               "statements": [
                 {
                   "expression": {
-                    "id": 399,
+                    "id": 432,
                     "name": "votaciones",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 358,
+                    "referencedDeclaration": 391,
                     "src": "753:10:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage",
                       "typeString": "address[] storage ref"
                     }
                   },
-                  "functionReturnParameters": 398,
-                  "id": 400,
+                  "functionReturnParameters": 431,
+                  "id": 433,
                   "nodeType": "Return",
                   "src": "746:17:3"
                 }
               ]
             },
             "functionSelector": "40d223af",
-            "id": 402,
+            "id": 435,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -8319,23 +8319,23 @@
             "nameLocation": "676:17:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 394,
+              "id": 427,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "693:2:3"
             },
             "returnParameters": {
-              "id": 398,
+              "id": 431,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 397,
+                  "id": 430,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 402,
+                  "scope": 435,
                   "src": "717:16:3",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -8345,7 +8345,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 395,
+                      "id": 428,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "717:7:3",
@@ -8355,7 +8355,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 396,
+                    "id": 429,
                     "nodeType": "ArrayTypeName",
                     "src": "717:9:3",
                     "typeDescriptions": {
@@ -8368,7 +8368,7 @@
               ],
               "src": "716:18:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "667:104:3",
             "stateMutability": "view",
             "virtual": false,
@@ -8376,32 +8376,32 @@
           },
           {
             "body": {
-              "id": 410,
+              "id": 443,
               "nodeType": "Block",
               "src": "919:46:3",
               "statements": [
                 {
                   "expression": {
-                    "id": 408,
+                    "id": 441,
                     "name": "votacionesTerminadas",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 361,
+                    "referencedDeclaration": 394,
                     "src": "937:20:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_array$_t_address_$dyn_storage",
                       "typeString": "address[] storage ref"
                     }
                   },
-                  "functionReturnParameters": 407,
-                  "id": 409,
+                  "functionReturnParameters": 440,
+                  "id": 442,
                   "nodeType": "Return",
                   "src": "930:27:3"
                 }
               ]
             },
             "functionSelector": "85be4d7b",
-            "id": 411,
+            "id": 444,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -8409,23 +8409,23 @@
             "nameLocation": "850:27:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 403,
+              "id": 436,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "877:2:3"
             },
             "returnParameters": {
-              "id": 407,
+              "id": 440,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 406,
+                  "id": 439,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 411,
+                  "scope": 444,
                   "src": "901:16:3",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -8435,7 +8435,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 404,
+                      "id": 437,
                       "name": "address",
                       "nodeType": "ElementaryTypeName",
                       "src": "901:7:3",
@@ -8445,7 +8445,7 @@
                         "typeString": "address"
                       }
                     },
-                    "id": 405,
+                    "id": 438,
                     "nodeType": "ArrayTypeName",
                     "src": "901:9:3",
                     "typeDescriptions": {
@@ -8458,7 +8458,7 @@
               ],
               "src": "900:18:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "841:124:3",
             "stateMutability": "view",
             "virtual": false,
@@ -8466,7 +8466,7 @@
           },
           {
             "body": {
-              "id": 433,
+              "id": 466,
               "nodeType": "Block",
               "src": "1101:125:3",
               "statements": [
@@ -8478,17 +8478,17 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 423,
+                        "id": 456,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 420,
+                          "id": 453,
                           "name": "indice",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 413,
+                          "referencedDeclaration": 446,
                           "src": "1120:6:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -8499,18 +8499,18 @@
                         "operator": "<",
                         "rightExpression": {
                           "expression": {
-                            "id": 421,
+                            "id": 454,
                             "name": "votaciones",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 358,
+                            "referencedDeclaration": 391,
                             "src": "1129:10:3",
                             "typeDescriptions": {
                               "typeIdentifier": "t_array$_t_address_$dyn_storage",
                               "typeString": "address[] storage ref"
                             }
                           },
-                          "id": 422,
+                          "id": 455,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -8531,7 +8531,7 @@
                       },
                       {
                         "hexValue": "496e646963652066756572612064652072616e676f",
-                        "id": 424,
+                        "id": 457,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -8557,7 +8557,7 @@
                           "typeString": "literal_string \"Indice fuera de rango\""
                         }
                       ],
-                      "id": 419,
+                      "id": 452,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -8571,7 +8571,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 425,
+                    "id": 458,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -8586,7 +8586,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 426,
+                  "id": 459,
                   "nodeType": "ExpressionStatement",
                   "src": "1112:60:3"
                 },
@@ -8595,24 +8595,24 @@
                     "arguments": [
                       {
                         "baseExpression": {
-                          "id": 428,
+                          "id": 461,
                           "name": "votaciones",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 358,
+                          "referencedDeclaration": 391,
                           "src": "1199:10:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_array$_t_address_$dyn_storage",
                             "typeString": "address[] storage ref"
                           }
                         },
-                        "id": 430,
+                        "id": 463,
                         "indexExpression": {
-                          "id": 429,
+                          "id": 462,
                           "name": "indice",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 413,
+                          "referencedDeclaration": 446,
                           "src": "1210:6:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -8638,18 +8638,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 427,
+                      "id": 460,
                       "name": "Votacion",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 352,
+                      "referencedDeclaration": 385,
                       "src": "1190:8:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_Votacion_$352_$",
+                        "typeIdentifier": "t_type$_t_contract$_Votacion_$385_$",
                         "typeString": "type(contract Votacion)"
                       }
                     },
-                    "id": 431,
+                    "id": 464,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -8660,19 +8660,19 @@
                     "src": "1190:28:3",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Votacion_$352",
+                      "typeIdentifier": "t_contract$_Votacion_$385",
                       "typeString": "contract Votacion"
                     }
                   },
-                  "functionReturnParameters": 418,
-                  "id": 432,
+                  "functionReturnParameters": 451,
+                  "id": 465,
                   "nodeType": "Return",
                   "src": "1183:35:3"
                 }
               ]
             },
             "functionSelector": "39010f71",
-            "id": 434,
+            "id": 467,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -8680,17 +8680,17 @@
             "nameLocation": "1041:15:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 414,
+              "id": 447,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 413,
+                  "id": 446,
                   "mutability": "mutable",
                   "name": "indice",
                   "nameLocation": "1062:6:3",
                   "nodeType": "VariableDeclaration",
-                  "scope": 434,
+                  "scope": 467,
                   "src": "1057:11:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -8699,7 +8699,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 412,
+                    "id": 445,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1057:4:3",
@@ -8714,38 +8714,38 @@
               "src": "1056:13:3"
             },
             "returnParameters": {
-              "id": 418,
+              "id": 451,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 417,
+                  "id": 450,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 434,
+                  "scope": 467,
                   "src": "1091:8:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Votacion_$352",
+                    "typeIdentifier": "t_contract$_Votacion_$385",
                     "typeString": "contract Votacion"
                   },
                   "typeName": {
-                    "id": 416,
+                    "id": 449,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 415,
+                      "id": 448,
                       "name": "Votacion",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 352,
+                      "referencedDeclaration": 385,
                       "src": "1091:8:3"
                     },
-                    "referencedDeclaration": 352,
+                    "referencedDeclaration": 385,
                     "src": "1091:8:3",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Votacion_$352",
+                      "typeIdentifier": "t_contract$_Votacion_$385",
                       "typeString": "contract Votacion"
                     }
                   },
@@ -8754,7 +8754,7 @@
               ],
               "src": "1090:10:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "1032:194:3",
             "stateMutability": "view",
             "virtual": false,
@@ -8762,7 +8762,7 @@
           },
           {
             "body": {
-              "id": 456,
+              "id": 489,
               "nodeType": "Block",
               "src": "1381:145:3",
               "statements": [
@@ -8774,17 +8774,17 @@
                           "typeIdentifier": "t_uint256",
                           "typeString": "uint256"
                         },
-                        "id": 446,
+                        "id": 479,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
                         "lValueRequested": false,
                         "leftExpression": {
-                          "id": 443,
+                          "id": 476,
                           "name": "indice",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 436,
+                          "referencedDeclaration": 469,
                           "src": "1400:6:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -8795,18 +8795,18 @@
                         "operator": "<",
                         "rightExpression": {
                           "expression": {
-                            "id": 444,
+                            "id": 477,
                             "name": "votacionesTerminadas",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 361,
+                            "referencedDeclaration": 394,
                             "src": "1409:20:3",
                             "typeDescriptions": {
                               "typeIdentifier": "t_array$_t_address_$dyn_storage",
                               "typeString": "address[] storage ref"
                             }
                           },
-                          "id": 445,
+                          "id": 478,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -8827,7 +8827,7 @@
                       },
                       {
                         "hexValue": "496e646963652066756572612064652072616e676f",
-                        "id": 447,
+                        "id": 480,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -8853,7 +8853,7 @@
                           "typeString": "literal_string \"Indice fuera de rango\""
                         }
                       ],
-                      "id": 442,
+                      "id": 475,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -8867,7 +8867,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 448,
+                    "id": 481,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -8882,7 +8882,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 449,
+                  "id": 482,
                   "nodeType": "ExpressionStatement",
                   "src": "1392:70:3"
                 },
@@ -8891,24 +8891,24 @@
                     "arguments": [
                       {
                         "baseExpression": {
-                          "id": 451,
+                          "id": 484,
                           "name": "votacionesTerminadas",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 361,
+                          "referencedDeclaration": 394,
                           "src": "1489:20:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_array$_t_address_$dyn_storage",
                             "typeString": "address[] storage ref"
                           }
                         },
-                        "id": 453,
+                        "id": 486,
                         "indexExpression": {
-                          "id": 452,
+                          "id": 485,
                           "name": "indice",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 436,
+                          "referencedDeclaration": 469,
                           "src": "1510:6:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -8934,18 +8934,18 @@
                           "typeString": "address"
                         }
                       ],
-                      "id": 450,
+                      "id": 483,
                       "name": "Votacion",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 352,
+                      "referencedDeclaration": 385,
                       "src": "1480:8:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_type$_t_contract$_Votacion_$352_$",
+                        "typeIdentifier": "t_type$_t_contract$_Votacion_$385_$",
                         "typeString": "type(contract Votacion)"
                       }
                     },
-                    "id": 454,
+                    "id": 487,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -8956,19 +8956,19 @@
                     "src": "1480:38:3",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Votacion_$352",
+                      "typeIdentifier": "t_contract$_Votacion_$385",
                       "typeString": "contract Votacion"
                     }
                   },
-                  "functionReturnParameters": 441,
-                  "id": 455,
+                  "functionReturnParameters": 474,
+                  "id": 488,
                   "nodeType": "Return",
                   "src": "1473:45:3"
                 }
               ]
             },
             "functionSelector": "09842a77",
-            "id": 457,
+            "id": 490,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -8976,17 +8976,17 @@
             "nameLocation": "1312:24:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 437,
+              "id": 470,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 436,
+                  "id": 469,
                   "mutability": "mutable",
                   "name": "indice",
                   "nameLocation": "1342:6:3",
                   "nodeType": "VariableDeclaration",
-                  "scope": 457,
+                  "scope": 490,
                   "src": "1337:11:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -8995,7 +8995,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 435,
+                    "id": 468,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1337:4:3",
@@ -9010,38 +9010,38 @@
               "src": "1336:13:3"
             },
             "returnParameters": {
-              "id": 441,
+              "id": 474,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 440,
+                  "id": 473,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 457,
+                  "scope": 490,
                   "src": "1371:8:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_contract$_Votacion_$352",
+                    "typeIdentifier": "t_contract$_Votacion_$385",
                     "typeString": "contract Votacion"
                   },
                   "typeName": {
-                    "id": 439,
+                    "id": 472,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 438,
+                      "id": 471,
                       "name": "Votacion",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 352,
+                      "referencedDeclaration": 385,
                       "src": "1371:8:3"
                     },
-                    "referencedDeclaration": 352,
+                    "referencedDeclaration": 385,
                     "src": "1371:8:3",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Votacion_$352",
+                      "typeIdentifier": "t_contract$_Votacion_$385",
                       "typeString": "contract Votacion"
                     }
                   },
@@ -9050,7 +9050,7 @@
               ],
               "src": "1370:10:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "1303:223:3",
             "stateMutability": "view",
             "virtual": false,
@@ -9058,25 +9058,25 @@
           },
           {
             "body": {
-              "id": 465,
+              "id": 498,
               "nodeType": "Block",
               "src": "1640:43:3",
               "statements": [
                 {
                   "expression": {
                     "expression": {
-                      "id": 462,
+                      "id": 495,
                       "name": "votaciones",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 358,
+                      "referencedDeclaration": 391,
                       "src": "1658:10:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_array$_t_address_$dyn_storage",
                         "typeString": "address[] storage ref"
                       }
                     },
-                    "id": 463,
+                    "id": 496,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -9089,15 +9089,15 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 461,
-                  "id": 464,
+                  "functionReturnParameters": 494,
+                  "id": 497,
                   "nodeType": "Return",
                   "src": "1651:24:3"
                 }
               ]
             },
             "functionSelector": "ae8110e7",
-            "id": 466,
+            "id": 499,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -9105,23 +9105,23 @@
             "nameLocation": "1598:12:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 458,
+              "id": 491,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1610:2:3"
             },
             "returnParameters": {
-              "id": 461,
+              "id": 494,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 460,
+                  "id": 493,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 466,
+                  "scope": 499,
                   "src": "1634:4:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -9130,7 +9130,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 459,
+                    "id": 492,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1634:4:3",
@@ -9144,7 +9144,7 @@
               ],
               "src": "1633:6:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "1589:94:3",
             "stateMutability": "view",
             "virtual": false,
@@ -9152,25 +9152,25 @@
           },
           {
             "body": {
-              "id": 474,
+              "id": 507,
               "nodeType": "Block",
               "src": "1818:53:3",
               "statements": [
                 {
                   "expression": {
                     "expression": {
-                      "id": 471,
+                      "id": 504,
                       "name": "votacionesTerminadas",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 361,
+                      "referencedDeclaration": 394,
                       "src": "1836:20:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_array$_t_address_$dyn_storage",
                         "typeString": "address[] storage ref"
                       }
                     },
-                    "id": 472,
+                    "id": 505,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -9183,15 +9183,15 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 470,
-                  "id": 473,
+                  "functionReturnParameters": 503,
+                  "id": 506,
                   "nodeType": "Return",
                   "src": "1829:34:3"
                 }
               ]
             },
             "functionSelector": "8e443bd1",
-            "id": 475,
+            "id": 508,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -9199,23 +9199,23 @@
             "nameLocation": "1766:22:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 467,
+              "id": 500,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1788:2:3"
             },
             "returnParameters": {
-              "id": 470,
+              "id": 503,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 469,
+                  "id": 502,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 475,
+                  "scope": 508,
                   "src": "1812:4:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -9224,7 +9224,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 468,
+                    "id": 501,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1812:4:3",
@@ -9238,7 +9238,7 @@
               ],
               "src": "1811:6:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "1757:114:3",
             "stateMutability": "view",
             "virtual": false,
@@ -9246,59 +9246,59 @@
           },
           {
             "body": {
-              "id": 531,
+              "id": 564,
               "nodeType": "Block",
               "src": "1970:532:3",
               "statements": [
                 {
                   "assignments": [
-                    482
+                    515
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 482,
+                      "id": 515,
                       "mutability": "mutable",
                       "name": "votacion",
                       "nameLocation": "1990:8:3",
                       "nodeType": "VariableDeclaration",
-                      "scope": 531,
+                      "scope": 564,
                       "src": "1981:17:3",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Votacion_$352",
+                        "typeIdentifier": "t_contract$_Votacion_$385",
                         "typeString": "contract Votacion"
                       },
                       "typeName": {
-                        "id": 481,
+                        "id": 514,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 480,
+                          "id": 513,
                           "name": "Votacion",
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 352,
+                          "referencedDeclaration": 385,
                           "src": "1981:8:3"
                         },
-                        "referencedDeclaration": 352,
+                        "referencedDeclaration": 385,
                         "src": "1981:8:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Votacion_$352",
+                          "typeIdentifier": "t_contract$_Votacion_$385",
                           "typeString": "contract Votacion"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 486,
+                  "id": 519,
                   "initialValue": {
                     "arguments": [
                       {
-                        "id": 484,
+                        "id": 517,
                         "name": "indice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 477,
+                        "referencedDeclaration": 510,
                         "src": "2017:6:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -9313,18 +9313,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 483,
+                      "id": 516,
                       "name": "obtenerVotacion",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 434,
+                      "referencedDeclaration": 467,
                       "src": "2001:15:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_uint256_$returns$_t_contract$_Votacion_$352_$",
+                        "typeIdentifier": "t_function_internal_view$_t_uint256_$returns$_t_contract$_Votacion_$385_$",
                         "typeString": "function (uint256) view returns (contract Votacion)"
                       }
                     },
-                    "id": 485,
+                    "id": 518,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -9335,7 +9335,7 @@
                     "src": "2001:23:3",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Votacion_$352",
+                      "typeIdentifier": "t_contract$_Votacion_$385",
                       "typeString": "contract Votacion"
                     }
                   },
@@ -9348,32 +9348,32 @@
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 487,
+                        "id": 520,
                         "name": "votacion",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 482,
+                        "referencedDeclaration": 515,
                         "src": "2035:8:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Votacion_$352",
+                          "typeIdentifier": "t_contract$_Votacion_$385",
                           "typeString": "contract Votacion"
                         }
                       },
-                      "id": 489,
+                      "id": 522,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "terminarVotacion",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 284,
+                      "referencedDeclaration": 317,
                       "src": "2035:25:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 490,
+                    "id": 523,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -9388,7 +9388,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 491,
+                  "id": 524,
                   "nodeType": "ExpressionStatement",
                   "src": "2035:27:3"
                 },
@@ -9398,14 +9398,14 @@
                       {
                         "arguments": [
                           {
-                            "id": 497,
+                            "id": 530,
                             "name": "votacion",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 482,
+                            "referencedDeclaration": 515,
                             "src": "2181:8:3",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_contract$_Votacion_$352",
+                              "typeIdentifier": "t_contract$_Votacion_$385",
                               "typeString": "contract Votacion"
                             }
                           }
@@ -9413,11 +9413,11 @@
                         "expression": {
                           "argumentTypes": [
                             {
-                              "typeIdentifier": "t_contract$_Votacion_$352",
+                              "typeIdentifier": "t_contract$_Votacion_$385",
                               "typeString": "contract Votacion"
                             }
                           ],
-                          "id": 496,
+                          "id": 529,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -9429,14 +9429,14 @@
                             "typeString": "type(address)"
                           },
                           "typeName": {
-                            "id": 495,
+                            "id": 528,
                             "name": "address",
                             "nodeType": "ElementaryTypeName",
                             "src": "2173:7:3",
                             "typeDescriptions": {}
                           }
                         },
-                        "id": 498,
+                        "id": 531,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -9460,18 +9460,18 @@
                         }
                       ],
                       "expression": {
-                        "id": 492,
+                        "id": 525,
                         "name": "votacionesTerminadas",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 361,
+                        "referencedDeclaration": 394,
                         "src": "2147:20:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_storage",
                           "typeString": "address[] storage ref"
                         }
                       },
-                      "id": 494,
+                      "id": 527,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -9484,7 +9484,7 @@
                         "typeString": "function (address[] storage pointer,address)"
                       }
                     },
-                    "id": 499,
+                    "id": 532,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -9499,43 +9499,43 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 500,
+                  "id": 533,
                   "nodeType": "ExpressionStatement",
                   "src": "2147:44:3"
                 },
                 {
                   "body": {
-                    "id": 524,
+                    "id": 557,
                     "nodeType": "Block",
                     "src": "2357:60:3",
                     "statements": [
                       {
                         "expression": {
-                          "id": 522,
+                          "id": 555,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "baseExpression": {
-                              "id": 514,
+                              "id": 547,
                               "name": "votaciones",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 358,
+                              "referencedDeclaration": 391,
                               "src": "2372:10:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_array$_t_address_$dyn_storage",
                                 "typeString": "address[] storage ref"
                               }
                             },
-                            "id": 516,
+                            "id": 549,
                             "indexExpression": {
-                              "id": 515,
+                              "id": 548,
                               "name": "i",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 502,
+                              "referencedDeclaration": 535,
                               "src": "2383:1:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -9557,34 +9557,34 @@
                           "operator": "=",
                           "rightHandSide": {
                             "baseExpression": {
-                              "id": 517,
+                              "id": 550,
                               "name": "votaciones",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 358,
+                              "referencedDeclaration": 391,
                               "src": "2388:10:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_array$_t_address_$dyn_storage",
                                 "typeString": "address[] storage ref"
                               }
                             },
-                            "id": 521,
+                            "id": 554,
                             "indexExpression": {
                               "commonType": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
                               },
-                              "id": 520,
+                              "id": 553,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "leftExpression": {
-                                "id": 518,
+                                "id": 551,
                                 "name": "i",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 502,
+                                "referencedDeclaration": 535,
                                 "src": "2399:1:3",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -9595,7 +9595,7 @@
                               "operator": "+",
                               "rightExpression": {
                                 "hexValue": "31",
-                                "id": 519,
+                                "id": 552,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": true,
@@ -9632,7 +9632,7 @@
                             "typeString": "address"
                           }
                         },
-                        "id": 523,
+                        "id": 556,
                         "nodeType": "ExpressionStatement",
                         "src": "2372:33:3"
                       }
@@ -9643,17 +9643,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 510,
+                    "id": 543,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 505,
+                      "id": 538,
                       "name": "i",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 502,
+                      "referencedDeclaration": 535,
                       "src": "2325:1:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -9667,25 +9667,25 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 509,
+                      "id": 542,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
                         "expression": {
-                          "id": 506,
+                          "id": 539,
                           "name": "votaciones",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 358,
+                          "referencedDeclaration": 391,
                           "src": "2329:10:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_array$_t_address_$dyn_storage",
                             "typeString": "address[] storage ref"
                           }
                         },
-                        "id": 507,
+                        "id": 540,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -9702,7 +9702,7 @@
                       "operator": "-",
                       "rightExpression": {
                         "hexValue": "31",
-                        "id": 508,
+                        "id": 541,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -9728,20 +9728,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 525,
+                  "id": 558,
                   "initializationExpression": {
                     "assignments": [
-                      502
+                      535
                     ],
                     "declarations": [
                       {
                         "constant": false,
-                        "id": 502,
+                        "id": 535,
                         "mutability": "mutable",
                         "name": "i",
                         "nameLocation": "2313:1:3",
                         "nodeType": "VariableDeclaration",
-                        "scope": 525,
+                        "scope": 558,
                         "src": "2308:6:3",
                         "stateVariable": false,
                         "storageLocation": "default",
@@ -9750,7 +9750,7 @@
                           "typeString": "uint256"
                         },
                         "typeName": {
-                          "id": 501,
+                          "id": 534,
                           "name": "uint",
                           "nodeType": "ElementaryTypeName",
                           "src": "2308:4:3",
@@ -9762,13 +9762,13 @@
                         "visibility": "internal"
                       }
                     ],
-                    "id": 504,
+                    "id": 537,
                     "initialValue": {
-                      "id": 503,
+                      "id": 536,
                       "name": "indice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 477,
+                      "referencedDeclaration": 510,
                       "src": "2317:6:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -9780,7 +9780,7 @@
                   },
                   "loopExpression": {
                     "expression": {
-                      "id": 512,
+                      "id": 545,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -9790,11 +9790,11 @@
                       "prefix": false,
                       "src": "2352:3:3",
                       "subExpression": {
-                        "id": 511,
+                        "id": 544,
                         "name": "i",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 502,
+                        "referencedDeclaration": 535,
                         "src": "2352:1:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -9806,7 +9806,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 513,
+                    "id": 546,
                     "nodeType": "ExpressionStatement",
                     "src": "2352:3:3"
                   },
@@ -9819,18 +9819,18 @@
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 526,
+                        "id": 559,
                         "name": "votaciones",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 358,
+                        "referencedDeclaration": 391,
                         "src": "2478:10:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_storage",
                           "typeString": "address[] storage ref"
                         }
                       },
-                      "id": 528,
+                      "id": 561,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -9843,7 +9843,7 @@
                         "typeString": "function (address[] storage pointer)"
                       }
                     },
-                    "id": 529,
+                    "id": 562,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -9858,14 +9858,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 530,
+                  "id": 563,
                   "nodeType": "ExpressionStatement",
                   "src": "2478:16:3"
                 }
               ]
             },
             "functionSelector": "dadd6071",
-            "id": 532,
+            "id": 565,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -9873,17 +9873,17 @@
             "nameLocation": "1933:16:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 478,
+              "id": 511,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 477,
+                  "id": 510,
                   "mutability": "mutable",
                   "name": "indice",
                   "nameLocation": "1955:6:3",
                   "nodeType": "VariableDeclaration",
-                  "scope": 532,
+                  "scope": 565,
                   "src": "1950:11:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -9892,7 +9892,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 476,
+                    "id": 509,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "1950:4:3",
@@ -9907,12 +9907,12 @@
               "src": "1949:13:3"
             },
             "returnParameters": {
-              "id": 479,
+              "id": 512,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1970:0:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "1924:578:3",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -9920,59 +9920,59 @@
           },
           {
             "body": {
-              "id": 579,
+              "id": 612,
               "nodeType": "Block",
               "src": "2601:395:3",
               "statements": [
                 {
                   "assignments": [
-                    539
+                    572
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 539,
+                      "id": 572,
                       "mutability": "mutable",
                       "name": "votacion",
                       "nameLocation": "2621:8:3",
                       "nodeType": "VariableDeclaration",
-                      "scope": 579,
+                      "scope": 612,
                       "src": "2612:17:3",
                       "stateVariable": false,
                       "storageLocation": "default",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_Votacion_$352",
+                        "typeIdentifier": "t_contract$_Votacion_$385",
                         "typeString": "contract Votacion"
                       },
                       "typeName": {
-                        "id": 538,
+                        "id": 571,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 537,
+                          "id": 570,
                           "name": "Votacion",
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 352,
+                          "referencedDeclaration": 385,
                           "src": "2612:8:3"
                         },
-                        "referencedDeclaration": 352,
+                        "referencedDeclaration": 385,
                         "src": "2612:8:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Votacion_$352",
+                          "typeIdentifier": "t_contract$_Votacion_$385",
                           "typeString": "contract Votacion"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 543,
+                  "id": 576,
                   "initialValue": {
                     "arguments": [
                       {
-                        "id": 541,
+                        "id": 574,
                         "name": "indice",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 534,
+                        "referencedDeclaration": 567,
                         "src": "2648:6:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -9987,18 +9987,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 540,
+                      "id": 573,
                       "name": "obtenerVotacion",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 434,
+                      "referencedDeclaration": 467,
                       "src": "2632:15:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_view$_t_uint256_$returns$_t_contract$_Votacion_$352_$",
+                        "typeIdentifier": "t_function_internal_view$_t_uint256_$returns$_t_contract$_Votacion_$385_$",
                         "typeString": "function (uint256) view returns (contract Votacion)"
                       }
                     },
-                    "id": 542,
+                    "id": 575,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -10009,7 +10009,7 @@
                     "src": "2632:23:3",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_Votacion_$352",
+                      "typeIdentifier": "t_contract$_Votacion_$385",
                       "typeString": "contract Votacion"
                     }
                   },
@@ -10022,32 +10022,32 @@
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 544,
+                        "id": 577,
                         "name": "votacion",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 539,
+                        "referencedDeclaration": 572,
                         "src": "2666:8:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_Votacion_$352",
+                          "typeIdentifier": "t_contract$_Votacion_$385",
                           "typeString": "contract Votacion"
                         }
                       },
-                      "id": 546,
+                      "id": 579,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "eliminar",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 268,
+                      "referencedDeclaration": 301,
                       "src": "2666:17:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_nonpayable$__$returns$__$",
                         "typeString": "function () external"
                       }
                     },
-                    "id": 547,
+                    "id": 580,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -10062,43 +10062,43 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 548,
+                  "id": 581,
                   "nodeType": "ExpressionStatement",
                   "src": "2666:19:3"
                 },
                 {
                   "body": {
-                    "id": 572,
+                    "id": 605,
                     "nodeType": "Block",
                     "src": "2851:60:3",
                     "statements": [
                       {
                         "expression": {
-                          "id": 570,
+                          "id": 603,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "baseExpression": {
-                              "id": 562,
+                              "id": 595,
                               "name": "votaciones",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 358,
+                              "referencedDeclaration": 391,
                               "src": "2866:10:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_array$_t_address_$dyn_storage",
                                 "typeString": "address[] storage ref"
                               }
                             },
-                            "id": 564,
+                            "id": 597,
                             "indexExpression": {
-                              "id": 563,
+                              "id": 596,
                               "name": "i",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 550,
+                              "referencedDeclaration": 583,
                               "src": "2877:1:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -10120,34 +10120,34 @@
                           "operator": "=",
                           "rightHandSide": {
                             "baseExpression": {
-                              "id": 565,
+                              "id": 598,
                               "name": "votaciones",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 358,
+                              "referencedDeclaration": 391,
                               "src": "2882:10:3",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_array$_t_address_$dyn_storage",
                                 "typeString": "address[] storage ref"
                               }
                             },
-                            "id": 569,
+                            "id": 602,
                             "indexExpression": {
                               "commonType": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
                               },
-                              "id": 568,
+                              "id": 601,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "leftExpression": {
-                                "id": 566,
+                                "id": 599,
                                 "name": "i",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 550,
+                                "referencedDeclaration": 583,
                                 "src": "2893:1:3",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -10158,7 +10158,7 @@
                               "operator": "+",
                               "rightExpression": {
                                 "hexValue": "31",
-                                "id": 567,
+                                "id": 600,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": true,
@@ -10195,7 +10195,7 @@
                             "typeString": "address"
                           }
                         },
-                        "id": 571,
+                        "id": 604,
                         "nodeType": "ExpressionStatement",
                         "src": "2866:33:3"
                       }
@@ -10206,17 +10206,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 558,
+                    "id": 591,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 553,
+                      "id": 586,
                       "name": "i",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 550,
+                      "referencedDeclaration": 583,
                       "src": "2819:1:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -10230,25 +10230,25 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 557,
+                      "id": 590,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
                         "expression": {
-                          "id": 554,
+                          "id": 587,
                           "name": "votaciones",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 358,
+                          "referencedDeclaration": 391,
                           "src": "2823:10:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_array$_t_address_$dyn_storage",
                             "typeString": "address[] storage ref"
                           }
                         },
-                        "id": 555,
+                        "id": 588,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -10265,7 +10265,7 @@
                       "operator": "-",
                       "rightExpression": {
                         "hexValue": "31",
-                        "id": 556,
+                        "id": 589,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -10291,20 +10291,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 573,
+                  "id": 606,
                   "initializationExpression": {
                     "assignments": [
-                      550
+                      583
                     ],
                     "declarations": [
                       {
                         "constant": false,
-                        "id": 550,
+                        "id": 583,
                         "mutability": "mutable",
                         "name": "i",
                         "nameLocation": "2807:1:3",
                         "nodeType": "VariableDeclaration",
-                        "scope": 573,
+                        "scope": 606,
                         "src": "2802:6:3",
                         "stateVariable": false,
                         "storageLocation": "default",
@@ -10313,7 +10313,7 @@
                           "typeString": "uint256"
                         },
                         "typeName": {
-                          "id": 549,
+                          "id": 582,
                           "name": "uint",
                           "nodeType": "ElementaryTypeName",
                           "src": "2802:4:3",
@@ -10325,13 +10325,13 @@
                         "visibility": "internal"
                       }
                     ],
-                    "id": 552,
+                    "id": 585,
                     "initialValue": {
-                      "id": 551,
+                      "id": 584,
                       "name": "indice",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 534,
+                      "referencedDeclaration": 567,
                       "src": "2811:6:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -10343,7 +10343,7 @@
                   },
                   "loopExpression": {
                     "expression": {
-                      "id": 560,
+                      "id": 593,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -10353,11 +10353,11 @@
                       "prefix": false,
                       "src": "2846:3:3",
                       "subExpression": {
-                        "id": 559,
+                        "id": 592,
                         "name": "i",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 550,
+                        "referencedDeclaration": 583,
                         "src": "2846:1:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -10369,7 +10369,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 561,
+                    "id": 594,
                     "nodeType": "ExpressionStatement",
                     "src": "2846:3:3"
                   },
@@ -10382,18 +10382,18 @@
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 574,
+                        "id": 607,
                         "name": "votaciones",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 358,
+                        "referencedDeclaration": 391,
                         "src": "2972:10:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_array$_t_address_$dyn_storage",
                           "typeString": "address[] storage ref"
                         }
                       },
-                      "id": 576,
+                      "id": 609,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -10406,7 +10406,7 @@
                         "typeString": "function (address[] storage pointer)"
                       }
                     },
-                    "id": 577,
+                    "id": 610,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -10421,14 +10421,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 578,
+                  "id": 611,
                   "nodeType": "ExpressionStatement",
                   "src": "2972:16:3"
                 }
               ]
             },
             "functionSelector": "2f88e903",
-            "id": 580,
+            "id": 613,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
@@ -10436,17 +10436,17 @@
             "nameLocation": "2564:16:3",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 535,
+              "id": 568,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 534,
+                  "id": 567,
                   "mutability": "mutable",
                   "name": "indice",
                   "nameLocation": "2586:6:3",
                   "nodeType": "VariableDeclaration",
-                  "scope": 580,
+                  "scope": 613,
                   "src": "2581:11:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -10455,7 +10455,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 533,
+                    "id": 566,
                     "name": "uint",
                     "nodeType": "ElementaryTypeName",
                     "src": "2581:4:3",
@@ -10470,19 +10470,19 @@
               "src": "2580:13:3"
             },
             "returnParameters": {
-              "id": 536,
+              "id": 569,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2601:0:3"
             },
-            "scope": 581,
+            "scope": 614,
             "src": "2555:441:3",
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 582,
+        "scope": 615,
         "src": "88:2911:3",
         "usedErrors": []
       }
@@ -10497,12 +10497,12 @@
     "5777": {
       "events": {},
       "links": {},
-      "address": "0x17673D3C73Bc2b7144C0E01d04de67Cb9a7625c4",
-      "transactionHash": "0x9c5ebc29f60bee3e41c8a4c1f72ee7e3c7e1c790e3963a7d954e5b7ea1e18a59"
+      "address": "0x8c3334B16050160620253284c1bEf26c62b2b277",
+      "transactionHash": "0xbbefb3e7fd8b0e8ad8060dad490bbf1153b585fc497213513001e9c42363644a"
     }
   },
   "schemaVersion": "3.4.7",
-  "updatedAt": "2023-11-25T14:13:19.993Z",
+  "updatedAt": "2023-11-30T12:11:29.024Z",
   "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",

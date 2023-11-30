@@ -11,8 +11,8 @@ contract CuentaFactory {
     uint public ultimoIndice = 0;
 
     // Función para crear un nuevo contrato Cuenta
-    function crearCuenta(string memory texto) public {
-        Cuenta cuenta = new Cuenta(texto, address(this));
+    function crearCuenta(string memory texto, string memory contrasena) public {
+        Cuenta cuenta = new Cuenta(texto, contrasena, address(this));
         cuentas[ultimoIndice] = cuenta;
         direcciones[cuenta._direccion()] = address(cuenta);
         ultimoIndice++;

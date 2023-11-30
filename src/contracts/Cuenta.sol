@@ -9,6 +9,7 @@ contract Cuenta {
     mapping(address => bool) private haVotado;
      // Dirección del CuentaFactory
     address public factory;
+    bytes32 private _contrasenaHash; // Almacena el hash de la contraseña
 
     struct Voto {
         address votacion;
@@ -21,8 +22,9 @@ contract Cuenta {
     Voto[] public votos;
 
     // Constructor que recibe una cadena de texto y la convierte en una dirección
-    constructor(string memory texto, address _factory) {
+    constructor(string memory texto, string memory contrasena, address _factory) {
         _direccion = keccak256(abi.encodePacked(texto));
+        _contrasenaHash = keccak256(abi.encodePacked(contrasena));
         factory = _factory; // Almacena la dirección de la factory
     }
 
@@ -46,6 +48,11 @@ contract Cuenta {
     // Función para obtener los votos de un usuario
     function obtenerVotos() public view returns (Voto[] memory) {
         return votos;
+    }
+
+    // Función para verificar la contraseña
+    function verificarContrasena(string memory contrasena) public view returns (bool) {
+        return keccak256(abi.encodePacked(contrasena)) == _contrasenaHash;
     }
 
 

@@ -25,6 +25,7 @@ function Home() {
   const [contractAddress, setContractAddress] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [direccionUsuario, setDireccionUsuario] = useState("");
+  const [contrasena, setContrasena] = useState("");
   const handleAdminLogin = () => {
     navigate("/inicioadmin");
   };
@@ -56,9 +57,9 @@ function Home() {
     }
   }
 
-  async function crearNuevaCuenta(texto) {
+  async function crearNuevaCuenta(texto, contrasena) {
     // Llama a la función crearCuenta en el contrato
-    let tx = await contract.crearCuenta(texto);
+    let tx = await contract.crearCuenta(texto, contrasena);
 
     // Espera a que la transacción sea minada
     await tx.wait();
@@ -91,12 +92,6 @@ function Home() {
     return { direccion, nuevaCuentaDireccion };
   }
 
-  useEffect(() => {
-    if (account) {
-      navigate("/inicio", { state: { account } });
-    }
-  }, [account, navigate]);
-
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -108,7 +103,10 @@ function Home() {
     // Llama a la función crearCuenta del contrato
     try {
       // Aquí es donde llamamos a la función para crear una nueva cuenta
-      let { direccion, nuevaCuentaDireccion } = await crearNuevaCuenta(texto);
+      let { direccion, nuevaCuentaDireccion } = await crearNuevaCuenta(
+        texto,
+        contrasena
+      );
 
       // Redirige al usuario a InicioLogged y pasa la dirección del contrato Cuenta como estado
       navigate("/inicio", {
@@ -134,13 +132,29 @@ function Home() {
         const direccionContrato = await contract.obtenerDireccionContrato(
           direccionUsuario
         );
-        // Luego redirige al usuario a la página de inicio con la dirección del usuario y la dirección del contrato
-        navigate("/inicio", {
-          state: {
-            account: direccionUsuario,
-            contractAddress: direccionContrato,
-          },
-        });
+
+        // Instancia el contrato Cuenta y verifica la contraseña
+        const cuentaContract = new ethers.Contract(
+          direccionContrato,
+          cuenta.abi,
+          wallet
+        );
+        const contrasenaCorrecta = await cuentaContract.verificarContrasena(
+          contrasena
+        );
+
+        if (contrasenaCorrecta) {
+          // Si la contraseña es correcta, redirige al usuario a la página de inicio
+          navigate("/inicio", {
+            state: {
+              account: direccionUsuario,
+              contractAddress: direccionContrato,
+            },
+          });
+        } else {
+          // Si la contraseña es incorrecta, muestra un mensaje de error
+          alert("Contraseña incorrecta");
+        }
       } else {
         window.alert("¡El Smart Contract no se ha desplegado en la red!");
       }
@@ -157,64 +171,83 @@ function Home() {
         <div className="row">
           <main role="main" className="col-lg-12 d-flex text-center">
             <div className="content mr-auto ml-auto">
-              <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formNombre">
-                  <Form.Label>Nombre</Form.Label>
+              <Form onSubmit={handleLogin}>
+                <Form.Group controlId="formDireccionUsuario">
+                  <Form.Label>Dirección del Usuario</Form.Label>
                   <Form.Control
                     type="text"
-                    placeholder="Ingresa tu nombre"
-                    name="nombre"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
+                    placeholder="Ingresa la dirección del usuario"
+                    value={direccionUsuario}
+                    onChange={(e) => setDireccionUsuario(e.target.value)}
                   />
                 </Form.Group>
-
-                <Form.Group controlId="formRut">
-                  <Form.Label>RUT</Form.Label>
+                <Form.Group controlId="formContrasenaLogin">
+                  <Form.Label>Contraseña</Form.Label>
                   <Form.Control
-                    type="text"
-                    placeholder="Ingresa tu RUT"
-                    name="rut"
-                    value={rut}
-                    onChange={(e) => setRut(e.target.value)}
+                    type="password"
+                    placeholder="Ingresa tu contraseña"
+                    value={contrasena}
+                    onChange={(e) => setContrasena(e.target.value)}
                   />
                 </Form.Group>
-
-                <Form.Group controlId="formFechaNacimiento">
-                  <Form.Label>Fecha de Nacimiento</Form.Label>
-                  <Form.Control
-                    type="date"
-                    placeholder="Ingresa tu fecha de nacimiento"
-                    name="fechaNacimiento"
-                    value={fechaNacimiento}
-                    onChange={(e) => setFechaNacimiento(e.target.value)}
-                  />
-                </Form.Group>
-
                 <Button variant="primary" type="submit">
-                  Crear Cuenta
+                  Iniciar Sesión
                 </Button>
               </Form>
               <Button variant="link" onClick={() => setShowModal(true)}>
-                ¿Ya tienes cuenta? Inicia sesión
+                ¿No tienes cuenta? ¡Crea una!
               </Button>
               <Modal show={showModal} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
-                  <Modal.Title>Iniciar Sesión</Modal.Title>
+                  <Modal.Title>Crear Cuenta</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <Form onSubmit={handleLogin}>
-                    <Form.Group controlId="formDireccionUsuario">
-                      <Form.Label>Dirección del Usuario</Form.Label>
+                  <Form onSubmit={handleSubmit}>
+                    <Form.Group controlId="formNombre">
+                      <Form.Label>Nombre</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Ingresa la dirección del usuario"
-                        value={direccionUsuario}
-                        onChange={(e) => setDireccionUsuario(e.target.value)}
+                        placeholder="Ingresa tu nombre"
+                        name="nombre"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
                       />
                     </Form.Group>
+
+                    <Form.Group controlId="formRut">
+                      <Form.Label>RUT</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Ingresa tu RUT"
+                        name="rut"
+                        value={rut}
+                        onChange={(e) => setRut(e.target.value)}
+                      />
+                    </Form.Group>
+
+                    <Form.Group controlId="formFechaNacimiento">
+                      <Form.Label>Fecha de Nacimiento</Form.Label>
+                      <Form.Control
+                        type="date"
+                        placeholder="Ingresa tu fecha de nacimiento"
+                        name="fechaNacimiento"
+                        value={fechaNacimiento}
+                        onChange={(e) => setFechaNacimiento(e.target.value)}
+                      />
+                    </Form.Group>
+
+                    <Form.Group controlId="formContrasena">
+                      <Form.Label>Contraseña</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder="Ingresa tu contraseña"
+                        value={contrasena}
+                        onChange={(e) => setContrasena(e.target.value)}
+                      />
+                    </Form.Group>
+
                     <Button variant="primary" type="submit">
-                      Iniciar Sesión
+                      Crear Cuenta
                     </Button>
                   </Form>
                 </Modal.Body>
