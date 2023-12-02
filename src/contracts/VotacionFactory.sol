@@ -10,8 +10,8 @@ contract VotacionFactory {
     address[] public votacionesTerminadas;
 
     // Función para crear una nueva votación
-    function crearVotacion(string memory nombre, string[] memory candidatos) public {
-        Votacion votacion = new Votacion(nombre, candidatos, address(this));
+    function crearVotacion(string memory nombre, string[] memory candidatos, string memory descripcion) public {
+        Votacion votacion = new Votacion(nombre, candidatos, address(this), descripcion);
         votaciones.push(address(votacion));
     }
 

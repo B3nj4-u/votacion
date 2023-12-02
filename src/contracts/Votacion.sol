@@ -16,12 +16,16 @@ contract Votacion {
     // Dirección del creador de la votación
     address public factory;
 
+    // Descripción de la votación
+    string descripcion;
+
     // Constructor que recibe el nombre y los candidatos
-    constructor(string memory _nombre, string[] memory _candidatos, address _factory) {
+    constructor(string memory _nombre, string[] memory _candidatos, address _factory, string memory _descripcion) {
         nombre = _nombre;
         estado = true;
         candidatos = _candidatos;
-        factory = _factory; // Almacena la dirección de la factory
+        factory = _factory; 
+        descripcion = _descripcion;
     }
 
     // Función para eliminar la votación
@@ -66,5 +70,10 @@ contract Votacion {
     // Función para obtener el número de candidatos
     function obtenerNumCandidatos() public view returns (uint) {
         return candidatos.length;
+    }
+
+    // Función para obtener la descripción de la votación
+    function obtenerDescripcion() public view returns (string memory) {
+        return descripcion;
     }
 }

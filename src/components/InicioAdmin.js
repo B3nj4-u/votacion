@@ -10,7 +10,7 @@ import {
   faPlus,
   faTrash,
   faHistory,
-  faPoll
+  faPoll,
 } from "@fortawesome/free-solid-svg-icons";
 
 const { ethers } = require("ethers");
@@ -23,6 +23,7 @@ const wallet = new ethers.Wallet(privateKey, provider);
 function InicioAdmin() {
   const [factory, setFactory] = useState(null);
   const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
   const [candidatos, setCandidatos] = useState([""]);
   const [show, setShow] = useState(false);
   const [votaciones, setVotaciones] = useState([]);
@@ -124,15 +125,16 @@ function InicioAdmin() {
           );
           const nombre = await votacionContract.nombre();
           const estado = await votacionContract.obtenerEstado();
+          const descripcion = await votacionContract.obtenerDescripcion(); // Obtén la descripción aquí
           const terminada = await votacionContract.obtenerTerminada();
 
           console.log(
-            `Votacion ${i}: nombre=${nombre}, estado=${estado}, terminada=${terminada}`
+            `Votacion ${i}: nombre=${nombre}, estado=${estado}, terminada=${terminada}, descripcion=${descripcion}`
           );
 
           if (estado && !terminada) {
             console.log(`La votacion ${i} está en curso.`);
-            votaciones.push({ nombre, direccion });
+            votaciones.push({ nombre, direccion, descripcion }); // Incluye la descripción aquí
           }
         }
       }
@@ -153,7 +155,7 @@ function InicioAdmin() {
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndiceTerminadas();
       console.log(`Hay ${ultimoIndice} votaciones terminadas en total.`);
-  
+
       for (let i = 0; i < ultimoIndice; i++) {
         console.log(`Cargando votacion terminada ${i}...`);
         const direccion = await factory.obtenerVotacionTerminada(i);
@@ -164,12 +166,15 @@ function InicioAdmin() {
             wallet
           );
           const nombre = await votacionContract.nombre();
-          console.log(`Votacion terminada ${i}: nombre=${nombre}`);
-  
-          votaciones.push({ nombre, direccion });
+          const descripcion = await votacionContract.obtenerDescripcion(); // Obtén la descripción aquí
+          console.log(
+            `Votacion terminada ${i}: nombre=${nombre}, descripcion=${descripcion}`
+          );
+
+          votaciones.push({ nombre, direccion, descripcion }); // Incluye la descripción aquí
         }
       }
-  
+
       setVotacionesTerminadas(votaciones);
       console.log("Votaciones terminadas cargadas.");
     } catch (error) {
@@ -177,14 +182,15 @@ function InicioAdmin() {
     }
   }
 
-  async function crearVotacion(nombre, candidatos) {
+  async function crearVotacion(nombre, candidatos, descripcion) {
     try {
-      let tx = await factory.crearVotacion(nombre, candidatos);
+      let tx = await factory.crearVotacion(nombre, candidatos, descripcion);
       await tx.wait();
       loadVotaciones(); // Actualiza las votaciones después de crear una nueva
     } catch (error) {
       console.error("Error creating votacion: ", error);
     }
+    console.log(descripcion);
   }
 
   async function eliminarVotacion(indice) {
@@ -245,16 +251,15 @@ function InicioAdmin() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-    await crearVotacion(nombre, candidatos);
+    await crearVotacion(nombre, candidatos, descripcion);
     handleClose();
   }
 
   return (
     <div>
-      <Navigation account={"factory?.address"} />
-      <h1>Bienvenido administrador, </h1>
-      <h4>VotacionFactory desplegado correctamente.</h4>
-      <p>Direccion: {factory?.address}</p>
+      <Navigation account={"Administrador"} />
+      <h1>Bienvenido administrador </h1>
+      <h4>Estado del contrato: True</h4>
       <div
         style={{
           display: "flex",
@@ -288,6 +293,16 @@ function InicioAdmin() {
                 placeholder="Ingresa el nombre de la votación"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formDescripcion">
+              <Form.Label>Descripción de la votación</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Ingresa la descripción de la votación"
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
               />
             </Form.Group>
 
@@ -370,7 +385,7 @@ function InicioAdmin() {
               <tr>
                 <th>#</th>
                 <th>Nombre</th>
-                <th>Dirección</th>
+                <th>Descripción</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -379,7 +394,7 @@ function InicioAdmin() {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{votacion.nombre}</td>
-                  <td>{votacion.direccion}</td>
+                  <td>{votacion.descripcion}</td>
                   <td>
                     <Button
                       variant="primary"
@@ -400,7 +415,7 @@ function InicioAdmin() {
           <tr>
             <th>#</th>
             <th>Nombre</th>
-            <th>Dirección</th>
+            <th>Descripción</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -409,10 +424,10 @@ function InicioAdmin() {
             <tr key={index}>
               <td>{index + 1}</td>
               <td>{votacion.nombre}</td>
-              <td>{votacion.direccion}</td>
+              <td>{votacion.descripcion}</td>
               <td>
                 <Button variant="primary" onClick={() => verCandidatos(index)}>
-                  <FontAwesomeIcon icon={faEye} /> Ver Candidatos
+                  <FontAwesomeIcon icon={faEye} /> Ver Detalles
                 </Button>
                 <Button
                   variant="warning"
