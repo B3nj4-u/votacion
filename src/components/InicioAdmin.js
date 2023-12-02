@@ -12,6 +12,8 @@ import {
   faHistory,
   faPoll,
 } from "@fortawesome/free-solid-svg-icons";
+require('dotenv').config();
+const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
 
 const { ethers } = require("ethers");
 
@@ -33,6 +35,10 @@ function InicioAdmin() {
   const [candidatosInfo, setCandidatosInfo] = useState([]);
   const [showHistorial, setShowHistorial] = useState(false);
   const [votacionesTerminadas, setVotacionesTerminadas] = useState([]);
+  const [crearVotacionPassword, setCrearVotacionPassword] = useState("");
+  const [eliminarVotacionPassword, setEliminarVotacionPassword] = useState("");
+  const [terminarVotacionPassword, setTerminarVotacionPassword] = useState("");
+  
 
   const handleCloseHistorial = () => setShowHistorial(false);
   const handleShowHistorial = () => setShowHistorial(true);
@@ -77,6 +83,10 @@ function InicioAdmin() {
   }
 
   async function terminarVotacion(indice) {
+    if (terminarVotacionPassword !== adminPassword) {
+      alert("Contraseña incorrecta!");
+      return;
+    }
     try {
       let tx = await factory.terminarVotacion(indice);
       await tx.wait();
@@ -89,6 +99,7 @@ function InicioAdmin() {
     } catch (error) {
       console.error("Error terminando votacion: ", error);
     }
+    setTerminarVotacionPassword("");
   }
 
   async function verResultados(indice) {
@@ -108,6 +119,7 @@ function InicioAdmin() {
   }
 
   async function loadVotaciones() {
+    console.log("contraseña: ", adminPassword)
     try {
       console.log("Cargando votaciones...");
       const votaciones = [];
@@ -183,6 +195,10 @@ function InicioAdmin() {
   }
 
   async function crearVotacion(nombre, candidatos, descripcion) {
+    if (crearVotacionPassword !== adminPassword) {
+      alert("Contraseña incorrecta!");
+      return;
+    }
     try {
       let tx = await factory.crearVotacion(nombre, candidatos, descripcion);
       await tx.wait();
@@ -191,9 +207,14 @@ function InicioAdmin() {
       console.error("Error creating votacion: ", error);
     }
     console.log(descripcion);
+    setCrearVotacionPassword("");
   }
 
   async function eliminarVotacion(indice) {
+    if (eliminarVotacionPassword !== adminPassword) {
+      alert("Contraseña incorrecta!");
+      return;
+    }
     try {
       let tx = await factory.eliminarVotacion(indice);
       await tx.wait();
@@ -201,6 +222,7 @@ function InicioAdmin() {
     } catch (error) {
       console.error("Error eliminando votacion: ", error);
     }
+    setEliminarVotacionPassword("");
   }
   async function verCandidatos(indice) {
     const votacionContract = new ethers.Contract(
@@ -328,6 +350,13 @@ function InicioAdmin() {
               Agregar candidato
             </Button>
 
+            <Form.Control
+              type="password"
+              placeholder="Ingresa la contraseña del administrador"
+              value={crearVotacionPassword}
+              onChange={(e) => setCrearVotacionPassword(e.target.value)}
+            />
+
             <Button variant="success" type="submit">
               Confirmar y crear
             </Button>
@@ -355,6 +384,12 @@ function InicioAdmin() {
                 ))}
               </Form.Control>
             </Form.Group>
+            <Form.Control
+              type="password"
+              placeholder="Ingresa la contraseña del administrador"
+              value={eliminarVotacionPassword}
+              onChange={(e) => setEliminarVotacionPassword(e.target.value)}
+            />
             <Button variant="danger" type="submit">
               Confirmar y eliminar
             </Button>
@@ -429,6 +464,12 @@ function InicioAdmin() {
                 <Button variant="primary" onClick={() => verCandidatos(index)}>
                   <FontAwesomeIcon icon={faEye} /> Ver Detalles
                 </Button>
+                <Form.Control
+                  type="password"
+                  placeholder="Ingresa la contraseña del administrador para terminar una votación"
+                  value={terminarVotacionPassword}
+                  onChange={(e) => setTerminarVotacionPassword(e.target.value)}
+                />
                 <Button
                   variant="warning"
                   onClick={() => terminarVotacion(index)}

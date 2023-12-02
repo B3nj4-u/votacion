@@ -6,6 +6,8 @@ import { Form, Button, Modal } from "react-bootstrap";
 
 import Navigation from "./Navbar";
 import MyCarousel from "./Carousel";
+require("dotenv").config();
+const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
 
 // Creacion de la billetera
 const { ethers } = require("ethers");
@@ -26,15 +28,30 @@ function Home() {
   const [showModal, setShowModal] = useState(false);
   const [direccionUsuario, setDireccionUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
-  const handleAdminLogin = () => {
-    navigate("/inicioadmin");
-  };
+  
+  
   const navigate = useNavigate();
-
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  const handleCloseAdminLoginModal = () => setShowAdminLoginModal(false);
+  const handleShowAdminLoginModal = () => setShowAdminLoginModal(true);
+  const handleAdminLogin = () => {
+    handleShowAdminLoginModal();
+  };
   useEffect(() => {
     loadBlockchainData();
   }, []);
-
+  
+  function handleSubmitAdminLogin(event) {
+    event.preventDefault();
+    const password = event.target.formAdminPassword.value;
+    if (password === process.env.REACT_APP_ADMIN_PASSWORD) {
+      navigate("/inicioadmin");
+      handleCloseAdminLoginModal();
+    } else {
+      alert("Contraseña incorrecta!");
+    }
+  }
+  
   async function loadBlockchainData() {
     const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
     const networkData = cuentaFactory.networks[networkId];
@@ -248,6 +265,28 @@ function Home() {
 
                     <Button variant="primary" type="submit">
                       Crear Cuenta
+                    </Button>
+                  </Form>
+                </Modal.Body>
+              </Modal>
+              <Modal
+                show={showAdminLoginModal}
+                onHide={handleCloseAdminLoginModal}
+              >
+                <Modal.Header closeButton>
+                  <Modal.Title>Contraseña del administrador</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form onSubmit={handleSubmitAdminLogin}>
+                    <Form.Group controlId="formAdminPassword">
+                      <Form.Label>Contraseña</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder="Ingresa la contraseña del administrador"
+                      />
+                    </Form.Group>
+                    <Button variant="primary" type="submit">
+                      Confirmar
                     </Button>
                   </Form>
                 </Modal.Body>
