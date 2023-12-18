@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Container, Form, Row, Col } from "react-bootstrap";
 import votacion from "../abis/Votacion.json";
+import votacionDHondt from "../abis/VotacionDHondt.json";
 import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
 
@@ -23,30 +24,65 @@ function UsuarioVota() {
     location.state.votacionAddress
   );
   const [candidatos, setCandidatos] = useState([]);
-  const [selectedCandidato, setSelectedCandidato] = useState(null);
+  const [selectedCandidato, setSelectedCandidato] = useState({
+    lista: null,
+    candidato: null,
+  });
+  const [metodoConteo, setMetodoConteo] = useState("");
+  const [votacionContract, setVotacionContract] = useState(null);
 
   useEffect(() => {
+    async function loadCandidatos() {
+      try {
+        let contractInstance;
+        let votacionContract = new ethers.Contract(
+          votacionAddress,
+          votacion.abi,
+          wallet
+        );
+        const metodo = await votacionContract.obtenerMetodoConteo();
+        setMetodoConteo(metodo);
+
+        if (metodo === "mayoria-absoluta") {
+          contractInstance = votacionContract;
+          const numCandidatos = await votacionContract.obtenerNumCandidatos();
+          const candidatos = [];
+          for (let i = 0; i < numCandidatos; i++) {
+            const candidato = await votacionContract.candidatos(i);
+            candidatos.push(candidato);
+          }
+          setCandidatos(candidatos);
+        } else if (metodo === "dhondt") {
+          contractInstance = new ethers.Contract(
+            votacionAddress,
+            votacionDHondt.abi,
+            wallet
+          );
+          const numListas = await contractInstance.obtenerNumListas();
+          const candidatosPorLista = [];
+          for (let i = 0; i < numListas; i++) {
+            const numCandidatos =
+              await contractInstance.obtenerNumCandidatosLista(i);
+            const candidatos = [];
+            for (let j = 0; j < numCandidatos; j++) {
+              const candidato = await contractInstance.obtenerCandidatoLista(
+                i,
+                j
+              );
+              candidatos.push(candidato);
+            }
+            candidatosPorLista.push(candidatos);
+          }
+          setCandidatos(candidatosPorLista);
+        }
+        setVotacionContract(contractInstance);
+      } catch (error) {
+        console.error("Error loading candidatos: ", error);
+      }
+    }
+
     loadCandidatos();
   }, []);
-
-  async function loadCandidatos() {
-    try {
-      const votacionContract = new ethers.Contract(
-        votacionAddress,
-        votacion.abi,
-        wallet
-      );
-      const numCandidatos = await votacionContract.obtenerNumCandidatos();
-      const candidatos = [];
-      for (let i = 0; i < numCandidatos; i++) {
-        const candidato = await votacionContract.candidatos(i);
-        candidatos.push(candidato);
-      }
-      setCandidatos(candidatos);
-    } catch (error) {
-      console.error("Error loading candidatos: ", error);
-    }
-  }
 
   async function votar() {
     try {
@@ -55,20 +91,30 @@ function UsuarioVota() {
         cuenta.abi,
         wallet
       );
-      const nombreCandidato = candidatos[selectedCandidato];
-      const votacionContract = new ethers.Contract(
-        votacionAddress,
-        votacion.abi,
-        wallet
-      );
+
       const nombreVotacion = await votacionContract.obtenerNombre();
+      let nombreCandidato;
+      let candidatoIndex;
+      let listaIndex;
+
+      if (metodoConteo === "mayoria-absoluta") {
+        nombreCandidato = candidatos[selectedCandidato];
+        candidatoIndex = selectedCandidato;
+        await votacionContract.votar(candidatoIndex);
+      } else if (metodoConteo === "dhondt") {
+        nombreCandidato =
+          candidatos[selectedCandidato.lista][selectedCandidato.candidato];
+        candidatoIndex = selectedCandidato.candidato;
+        listaIndex = selectedCandidato.lista;
+        await votacionContract.votarDhondt(listaIndex, candidatoIndex);
+      }
+
       await cuentaContract.votar(
         votacionAddress,
-        selectedCandidato,
+        candidatoIndex,
         nombreCandidato,
         nombreVotacion
       );
-      await votacionContract.votar(selectedCandidato);
 
       alert("Voto registrado con éxito.");
       navigate("/Boleta", {
@@ -93,18 +139,45 @@ function UsuarioVota() {
           <Col md="auto">
             <h1>Selecciona un candidato para votar</h1>
             <Form>
-              {candidatos.map((candidato, index) => (
-                <div key={index} className="mb-3">
-                  <Form.Check
-                    type="radio"
-                    id={`candidato-${index}`}
-                    name="candidato"
-                    label={candidato}
-                    value={index}
-                    onChange={() => setSelectedCandidato(index)}
-                  />
-                </div>
-              ))}
+              {metodoConteo === "mayoria-absoluta"
+                ? // Muestra los candidatos para la votación de mayoría absoluta
+                  candidatos.map((candidato, index) => (
+                    <div key={index} className="mb-3">
+                      <Form.Check
+                        type="radio"
+                        id={`candidato-${index}`}
+                        name="candidato"
+                        label={candidato}
+                        value={index}
+                        onChange={() => setSelectedCandidato(index)}
+                      />
+                    </div>
+                  ))
+                : // Muestra los candidatos para la votación D'Hondt
+                  candidatos.map((lista, indexLista) => (
+                    <div key={indexLista}>
+                      <h2>Lista {indexLista + 1}</h2>
+                      {lista.map((candidato, indexCandidato) => (
+                        <div key={indexCandidato} className="mb-3">
+                          <Form.Check
+                            type="radio"
+                            id={`candidato-${indexLista}-${indexCandidato}`}
+                            name="candidato"
+                            label={candidato}
+                            value={`${indexLista}-${indexCandidato}`}
+                            onChange={(e) => {
+                              const [lista, candidato] =
+                                e.target.value.split("-");
+                              setSelectedCandidato({
+                                lista: parseInt(lista),
+                                candidato: parseInt(candidato),
+                              });
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ))}
               <Button variant="primary" onClick={votar}>
                 Votar
               </Button>

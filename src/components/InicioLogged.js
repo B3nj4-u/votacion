@@ -6,8 +6,10 @@ import { faEye, faHistory, faVoteYea } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import votacionFactory from "../abis/VotacionFactory.json";
 import votacion from "../abis/Votacion.json";
+import votacionDHondt from "../abis/VotacionDHondt.json";
 import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
+import dhondt from "dhondt";
 
 const { ethers } = require("ethers");
 
@@ -29,11 +31,11 @@ function InicioLogged() {
   const [showCandidatos, setShowCandidatos] = useState(false);
   const [candidatosInfo, setCandidatosInfo] = useState([]);
   const [showHistorial, setShowHistorial] = useState(false);
-
   const handleCloseCandidatos = () => setShowCandidatos(false);
   const handleShowCandidatos = () => setShowCandidatos(true);
   const handleCloseHistorial = () => setShowHistorial(false);
   const handleShowHistorial = () => setShowHistorial(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -80,8 +82,10 @@ function InicioLogged() {
           const nombre = await votacionContract.nombre();
           const estado = await votacionContract.obtenerEstado();
           const terminada = await votacionContract.obtenerTerminada();
+          const descripcion = await votacionContract.obtenerDescripcion();
+
           if (estado && !terminada) {
-            votaciones.push({ nombre, direccion });
+            votaciones.push({ nombre, direccion, descripcion });
           }
         }
       }
@@ -105,8 +109,9 @@ function InicioLogged() {
             wallet
           );
           const nombre = await votacionContract.nombre();
+          const descripcion = await votacionContract.obtenerDescripcion();
 
-          votaciones.push({ nombre, direccion });
+          votaciones.push({ nombre, direccion, descripcion });
         }
       }
 
@@ -137,26 +142,6 @@ function InicioLogged() {
     }
   }
 
-  async function verResultados(indice) {
-    try {
-      const votacionContract = new ethers.Contract(
-        votacionesTerminadas[indice].direccion,
-        votacion.abi,
-        wallet
-      );
-      const numCandidatos = await votacionContract.obtenerNumCandidatos();
-      const candidatosYVotos = [];
-      for (let i = 0; i < numCandidatos; i++) {
-        const candidato = await votacionContract.candidatos(i);
-        const votos = (await votacionContract.obtenerVotos(i)).toNumber();
-        candidatosYVotos.push({ candidato, votos });
-      }
-      alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
-    } catch (error) {
-      console.error("Error viewing results: ", error);
-    }
-  }
-
   async function irAVotar(indice) {
     try {
       const votacionDireccion = votaciones[indice].direccion;
@@ -182,6 +167,108 @@ function InicioLogged() {
     }
   }
 
+  async function verDetallesTerminadas(indice) {
+    const votacionContract = new ethers.Contract(
+      votacionesTerminadas[indice].direccion,
+      votacion.abi,
+      wallet
+    );
+    const metodoConteo = await votacionContract.obtenerMetodoConteo();
+    console.log(metodoConteo);
+
+    if (metodoConteo === "mayoria-absoluta") {
+      verResultados(indice);
+    } else if (metodoConteo === "dhondt") {
+      obtenerResultadosDhondtTerminada(indice);
+    }
+  }
+
+  async function verResultados(indice) {
+    try {
+      const votacionContract = new ethers.Contract(
+        votacionesTerminadas[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const numCandidatos = await votacionContract.obtenerNumCandidatos();
+      const candidatosYVotos = [];
+      for (let i = 0; i < numCandidatos; i++) {
+        const candidato = await votacionContract.candidatos(i);
+        const votos = (await votacionContract.obtenerVotos(i)).toNumber();
+        candidatosYVotos.push({ candidato, votos });
+      }
+      alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
+    } catch (error) {
+      console.error("Error viewing results: ", error);
+    }
+  }
+
+  async function obtenerResultadosDhondtTerminada(indice) {
+    try {
+      console.log("Iniciando obtenerResultadosDhondt...");
+  
+      const votacionContract = new ethers.Contract(
+        votacionesTerminadas[indice].direccion,
+        votacionDHondt.abi,
+        wallet
+      );
+  
+      console.log("Contrato obtenido:", votacionContract);
+  
+      // Obtén todos los votos individuales de cada candidato en cada lista
+      const votosDhondtBigNumber = await votacionContract.obtenerTodosLosVotos();
+      const votosPorCandidato = votosDhondtBigNumber.map((lista) =>
+        lista.map((voto) => voto.toNumber())
+      );
+  
+      // Suma los votos de cada candidato en una lista para obtener el total de votos de cada lista
+      const votosPorLista = votosPorCandidato.map((votosLista) =>
+        votosLista.reduce((a, b) => a + b, 0)
+      );
+  
+      console.log("Votos por lista:", votosPorLista);
+  
+      // Obtener los escaños
+      const escanios = await votacionContract.obtenerEscanios();
+      console.log("Escanios:", escanios);
+  
+      // Calcula los escaños usando la biblioteca dhondt
+      const asignacion = dhondt.compute(votosPorLista, escanios);
+      console.log("Asignación:", asignacion);
+  
+      let mensaje = '';
+      for (let i = 0; i < asignacion.length; i++) {
+        if (asignacion[i] > 0) {
+          const nombreLista = await votacionContract.obtenerNombreLista(i);
+          const numCandidatos = await votacionContract.obtenerNumCandidatosLista(i);
+          let candidatos = [];
+          for (let j = 0; j < numCandidatos; j++) {
+            const candidato = await votacionContract.obtenerCandidatoLista(i, j);
+            const votosCandidato = votosPorCandidato[i][j];
+            candidatos.push({ nombre: candidato, votos: votosCandidato });
+          }
+          // Ordena los candidatos por votos en orden descendente
+          candidatos.sort((a, b) => b.votos - a.votos);
+          // Selecciona solo los candidatos que fueron electos
+          const candidatosElectos = candidatos.slice(0, asignacion[i]);
+          for (let k = 0; k < candidatosElectos.length; k++) {
+            mensaje += `Lista: ${nombreLista}, Candidato: ${candidatosElectos[k].nombre}, Escaños: ${asignacion[i]}, Votos: ${candidatosElectos[k].votos}\n`;
+          }
+        }
+      }
+  
+      console.log("Mensaje final:", mensaje);
+      alert(mensaje);
+    } catch (error) {
+      console.error("Error en obtenerResultadosDhondt:", error);
+    }
+  }
+  
+  
+  
+  
+  
+
   return (
     <div>
       <Navigation account={account} />
@@ -195,7 +282,7 @@ function InicioLogged() {
           <tr>
             <th>#</th>
             <th>Nombre</th>
-            <th>Dirección</th>
+            <th>Descripción</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -204,7 +291,7 @@ function InicioLogged() {
             <tr key={index}>
               <td>{index + 1}</td>
               <td>{votacion.nombre}</td>
-              <td>{votacion.direccion}</td>
+              <td>{votacion.descripcion}</td>
               <td>
                 <Button variant="primary" onClick={() => verCandidatos(index)}>
                   <FontAwesomeIcon icon={faEye} /> Ver Candidatos
@@ -223,9 +310,7 @@ function InicioLogged() {
         </Modal.Header>
         <Modal.Body>
           {candidatosInfo.map((info, index) => (
-            <p key={index}>
-              {info.candidato}: {info.votos} votos
-            </p>
+            <p key={index}>{info.candidato}</p>
           ))}
         </Modal.Body>
       </Modal>
@@ -239,7 +324,7 @@ function InicioLogged() {
               <tr>
                 <th>#</th>
                 <th>Nombre</th>
-                <th>Dirección</th>
+                <th>Descripción</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -248,11 +333,11 @@ function InicioLogged() {
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>{votacion.nombre}</td>
-                  <td>{votacion.direccion}</td>
+                  <td>{votacion.descripcion}</td>
                   <td>
                     <Button
                       variant="primary"
-                      onClick={() => verResultados(index)}
+                      onClick={() => verDetallesTerminadas(index)}
                     >
                       <FontAwesomeIcon icon={faEye} /> Ver Resultados
                     </Button>

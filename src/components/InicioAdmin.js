@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Form, Button, Modal, Table } from "react-bootstrap";
 import votacionFactory from "../abis/VotacionFactory.json";
 import votacion from "../abis/Votacion.json";
+import votacionDHondt from "../abis/VotacionDHondt.json";
 import Navigation from "./Navbar";
+import dhondt from "dhondt";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEye,
@@ -12,7 +14,7 @@ import {
   faHistory,
   faPoll,
 } from "@fortawesome/free-solid-svg-icons";
-require('dotenv').config();
+require("dotenv").config();
 const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
 
 const { ethers } = require("ethers");
@@ -38,7 +40,12 @@ function InicioAdmin() {
   const [crearVotacionPassword, setCrearVotacionPassword] = useState("");
   const [eliminarVotacionPassword, setEliminarVotacionPassword] = useState("");
   const [terminarVotacionPassword, setTerminarVotacionPassword] = useState("");
-  
+  const [metodoConteo, setMetodoConteo] = useState("");
+  const [listas, setListas] = useState([[""]]);
+  const [escanios, setEscanios] = useState(1);
+  const [resultados, setResultados] = useState([]);
+  const [showResultados, setShowResultados] = useState(false);
+  const [nombresDeListas, setNombresDeListas] = useState([]);
 
   const handleCloseHistorial = () => setShowHistorial(false);
   const handleShowHistorial = () => setShowHistorial(true);
@@ -82,9 +89,74 @@ function InicioAdmin() {
     }
   }
 
+  /////////////////////////////////////////////////////
+  //Creación, Eliminación y Terminación de Votaciones//
+  ////////////////////////////////////////////////////
+  async function crearVotacionDhondt(
+    nombre,
+    listas,
+    nombresDeListas,
+    descripcion,
+    escanios
+  ) {
+    if (crearVotacionPassword !== adminPassword) {
+      alert("Contrasenia incorrecta!");
+      return;
+    }
+    try {
+      let tx = await factory.crearVotacionDhondt(
+        nombre,
+        listas,
+        nombresDeListas, // Añade esta línea
+        descripcion,
+        escanios
+      );
+      await tx.wait();
+      let ultimoIndice = await factory.ultimoIndice();
+      let votacionAddress = await factory.obtenerVotacion(ultimoIndice - 1);
+
+      console.log("Dirección de la votación creada: ", votacionAddress);
+      loadVotaciones(); // Actualiza las votaciones después de crear una nueva
+    } catch (error) {
+      console.error("Error creating votacion: ", error);
+    }
+    setCrearVotacionPassword("");
+  }
+
+  async function crearVotacion(nombre, candidatos, descripcion) {
+    if (crearVotacionPassword !== adminPassword) {
+      alert("Contrasenia incorrecta!");
+      return;
+    }
+    try {
+      let tx = await factory.crearVotacion(nombre, candidatos, descripcion);
+      await tx.wait();
+      loadVotaciones(); // Actualiza las votaciones después de crear una nueva
+    } catch (error) {
+      console.error("Error creating votacion: ", error);
+    }
+    console.log(descripcion);
+    setCrearVotacionPassword("");
+  }
+
+  async function eliminarVotacion(indice) {
+    if (eliminarVotacionPassword !== adminPassword) {
+      alert("Contrasenia incorrecta!");
+      return;
+    }
+    try {
+      let tx = await factory.eliminarVotacion(indice);
+      await tx.wait();
+      loadVotaciones(); // Actualiza las votaciones después de eliminar una
+    } catch (error) {
+      console.error("Error eliminando votacion: ", error);
+    }
+    setEliminarVotacionPassword("");
+  }
+
   async function terminarVotacion(indice) {
     if (terminarVotacionPassword !== adminPassword) {
-      alert("Contraseña incorrecta!");
+      alert("Contrasenia incorrecta!");
       return;
     }
     try {
@@ -102,24 +174,12 @@ function InicioAdmin() {
     setTerminarVotacionPassword("");
   }
 
-  async function verResultados(indice) {
-    const votacionContract = new ethers.Contract(
-      votacionesTerminadas[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const numCandidatos = await votacionContract.obtenerNumCandidatos();
-    const candidatosYVotos = [];
-    for (let i = 0; i < numCandidatos; i++) {
-      const candidato = await votacionContract.candidatos(i);
-      const votos = (await votacionContract.obtenerVotos(i)).toNumber();
-      candidatosYVotos.push({ candidato, votos });
-    }
-    alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
-  }
+  ////////////////////////////////
+  // Visualizacion de las tablas//
+  ///////////////////////////////
 
   async function loadVotaciones() {
-    console.log("contraseña: ", adminPassword)
+    console.log("contrasenia: ", adminPassword);
     try {
       console.log("Cargando votaciones...");
       const votaciones = [];
@@ -194,36 +254,42 @@ function InicioAdmin() {
     }
   }
 
-  async function crearVotacion(nombre, candidatos, descripcion) {
-    if (crearVotacionPassword !== adminPassword) {
-      alert("Contraseña incorrecta!");
-      return;
+  //////////////////////////
+  // Obtención de Detalles//
+  //////////////////////////
+  async function verDetalles(indice) {
+    const votacionContract = new ethers.Contract(
+      votaciones[indice].direccion,
+      votacion.abi,
+      wallet
+    );
+    const metodoConteo = await votacionContract.obtenerMetodoConteo();
+    console.log(metodoConteo);
+
+    if (metodoConteo === "mayoria-absoluta") {
+      verCandidatos(indice);
+    } else if (metodoConteo === "dhondt") {
+      obtenerResultadosDhondt(indice);
     }
-    try {
-      let tx = await factory.crearVotacion(nombre, candidatos, descripcion);
-      await tx.wait();
-      loadVotaciones(); // Actualiza las votaciones después de crear una nueva
-    } catch (error) {
-      console.error("Error creating votacion: ", error);
-    }
-    console.log(descripcion);
-    setCrearVotacionPassword("");
   }
 
-  async function eliminarVotacion(indice) {
-    if (eliminarVotacionPassword !== adminPassword) {
-      alert("Contraseña incorrecta!");
-      return;
+  async function verDetallesTerminadas(indice) {
+    const votacionContract = new ethers.Contract(
+      votacionesTerminadas[indice].direccion,
+      votacion.abi,
+      wallet
+    );
+    const metodoConteo = await votacionContract.obtenerMetodoConteo();
+    console.log(metodoConteo);
+
+    if (metodoConteo === "mayoria-absoluta") {
+      verResultados(indice);
+    } else if (metodoConteo === "dhondt") {
+      obtenerResultadosDhondtTerminada(indice);
     }
-    try {
-      let tx = await factory.eliminarVotacion(indice);
-      await tx.wait();
-      loadVotaciones(); // Actualiza las votaciones después de eliminar una
-    } catch (error) {
-      console.error("Error eliminando votacion: ", error);
-    }
-    setEliminarVotacionPassword("");
   }
+  
+
   async function verCandidatos(indice) {
     const votacionContract = new ethers.Contract(
       votaciones[indice].direccion,
@@ -241,6 +307,167 @@ function InicioAdmin() {
     handleShowCandidatos();
   }
 
+  async function obtenerResultadosDhondtTerminada(indice) {
+    try {
+      console.log("Iniciando obtenerResultadosDhondt...");
+
+      const votacionContract = new ethers.Contract(
+        votacionesTerminadas[indice].direccion,
+        votacionDHondt.abi,
+        wallet
+      );
+
+      console.log("Contrato obtenido:", votacionContract);
+
+      // Obtén los votos de cada lista del contrato
+      const votos = await Promise.all(
+        listas.map(async (lista, i) => {
+          const votosLista = await votacionContract.obtenerVotosLista(i);
+          return votosLista.reduce((a, b) => a + b.toNumber(), 0);
+        })
+      );
+
+      console.log("Votos:", votos);
+
+      // Obtén todos los votos individuales de cada candidato en cada lista
+      const votosDhondtBigNumber =
+        await votacionContract.obtenerTodosLosVotos();
+      const votosDhondt = votosDhondtBigNumber.map((lista) =>
+        lista.map((voto) => voto.toNumber())
+      );
+
+      // Obtener los escaños
+      const escanios = await votacionContract.obtenerEscanios();
+      console.log("Escanios:", escanios);
+
+      // Calcula los escaños usando la biblioteca dhondt
+      const asignacion = dhondt.compute(votos, escanios);
+      console.log("Asignación:", asignacion);
+
+      const resultados = [];
+      for (let i = 0; i < asignacion.length; i++) {
+        const candidatos = [];
+        for (let j = 0; j < listas[i].length; j++) {
+          candidatos.push({
+            nombre: listas[i][j],
+            votos: votosDhondt[i][j],
+          });
+        }
+        // Ordena los candidatos por votos en orden descendente
+        candidatos.sort((a, b) => b.votos - a.votos);
+        // Selecciona solo los candidatos que fueron electos
+        const candidatosElectos = candidatos.slice(0, asignacion[i]);
+        resultados.push({
+          lista: nombresDeListas[i],
+          escanios: asignacion[i],
+          candidatos: candidatosElectos,
+        });
+      }
+
+      console.log("Resultados:", resultados);
+
+      // Actualiza el estado de los resultados y muestra el modal de resultados
+      setResultados(resultados);
+      setShowResultados(true);
+      console.log("Estado actualizado, modal debería mostrarse");
+
+      // Cierra el modal actual
+      handleClose();
+    } catch (error) {
+      console.error("Error en obtenerResultadosDhondt:", error);
+    }
+  }
+
+  async function obtenerResultadosDhondt(indice) {
+    try {
+      console.log("Iniciando obtenerResultadosDhondt...");
+
+      const votacionContract = new ethers.Contract(
+        votaciones[indice].direccion,
+        votacionDHondt.abi,
+        wallet
+      );
+
+      console.log("Contrato obtenido:", votacionContract);
+
+      // Obtén los votos de cada lista del contrato
+      const votos = await Promise.all(
+        listas.map(async (lista, i) => {
+          const votosLista = await votacionContract.obtenerVotosLista(i);
+          return votosLista.reduce((a, b) => a + b.toNumber(), 0);
+        })
+      );
+
+      console.log("Votos:", votos);
+
+      // Obtén todos los votos individuales de cada candidato en cada lista
+      const votosDhondtBigNumber =
+        await votacionContract.obtenerTodosLosVotos();
+      const votosDhondt = votosDhondtBigNumber.map((lista) =>
+        lista.map((voto) => voto.toNumber())
+      );
+
+      // Obtener los escaños
+      const escanios = await votacionContract.obtenerEscanios();
+      console.log("Escanios:", escanios);
+
+      // Calcula los escaños usando la biblioteca dhondt
+      const asignacion = dhondt.compute(votos, escanios);
+      console.log("Asignación:", asignacion);
+
+      const resultados = [];
+      for (let i = 0; i < asignacion.length; i++) {
+        const candidatos = [];
+        for (let j = 0; j < listas[i].length; j++) {
+          candidatos.push({
+            nombre: listas[i][j],
+            votos: votosDhondt[i][j],
+          });
+        }
+        // Ordena los candidatos por votos en orden descendente
+        candidatos.sort((a, b) => b.votos - a.votos);
+        // Selecciona solo los candidatos que fueron electos
+        const candidatosElectos = candidatos.slice(0, asignacion[i]);
+        resultados.push({
+          lista: nombresDeListas[i],
+          escanios: asignacion[i],
+          candidatos: candidatosElectos,
+        });
+      }
+
+      console.log("Resultados:", resultados);
+
+      // Actualiza el estado de los resultados y muestra el modal de resultados
+      setResultados(resultados);
+      setShowResultados(true);
+      console.log("Estado actualizado, modal debería mostrarse");
+
+      // Cierra el modal actual
+      handleClose();
+    } catch (error) {
+      console.error("Error en obtenerResultadosDhondt:", error);
+    }
+  }
+
+  async function verResultados(indice) {
+    const votacionContract = new ethers.Contract(
+      votacionesTerminadas[indice].direccion,
+      votacion.abi,
+      wallet
+    );
+    const numCandidatos = await votacionContract.obtenerNumCandidatos();
+    const candidatosYVotos = [];
+    for (let i = 0; i < numCandidatos; i++) {
+      const candidato = await votacionContract.candidatos(i);
+      const votos = (await votacionContract.obtenerVotos(i)).toNumber();
+      candidatosYVotos.push({ candidato, votos });
+    }
+    alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
+  }
+  /////////////////////
+  //Manejo de Botones//
+  ////////////////////
+
   async function handleSubmitEliminar(event) {
     event.preventDefault();
     if (votacionAEliminar !== "") {
@@ -255,25 +482,73 @@ function InicioAdmin() {
     }
   }
 
-  function handleAddCandidato() {
+  function handleAddCandidato1() {
     setCandidatos([...candidatos, ""]);
   }
 
-  function handleRemoveCandidato(index) {
+  function handleRemoveCandidato1(index) {
     const newCandidatos = [...candidatos];
     newCandidatos.splice(index, 1);
     setCandidatos(newCandidatos);
   }
 
-  function handleCandidatoChange(event, index) {
+  function handleNombreListaChange(e, index) {
+    const newNombresDeListas = [...nombresDeListas];
+    newNombresDeListas[index] = e.target.value;
+    setNombresDeListas(newNombresDeListas);
+  }
+
+  function handleCandidatoChange1(event, index) {
     const newCandidatos = [...candidatos];
     newCandidatos[index] = event.target.value;
     setCandidatos(newCandidatos);
   }
 
+  function handleAddCandidato(indexLista) {
+    const newListas = [...listas];
+    newListas[indexLista].push("");
+    setListas(newListas);
+  }
+
+  // Función para eliminar un candidato de una lista
+  function handleRemoveCandidato(indexLista, indexCandidato) {
+    const newListas = [...listas];
+    newListas[indexLista].splice(indexCandidato, 1);
+    setListas(newListas);
+  }
+
+  // Función para manejar el cambio en el nombre de un candidato
+  function handleCandidatoChange(event, indexLista, indexCandidato) {
+    const newListas = [...listas];
+    newListas[indexLista][indexCandidato] = event.target.value;
+    setListas(newListas);
+  }
+
+  // Función para agregar una nueva lista de candidatos
+  function handleAddLista() {
+    setListas([...listas, [""]]);
+  }
+
+  // Función para eliminar una lista de candidatos
+  function handleRemoveLista(indexLista) {
+    const newListas = [...listas];
+    newListas.splice(indexLista, 1);
+    setListas(newListas);
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
-    await crearVotacion(nombre, candidatos, descripcion);
+    if (metodoConteo === "mayoria-absoluta") {
+      await crearVotacion(nombre, candidatos, descripcion);
+    } else if (metodoConteo === "dhondt") {
+      await crearVotacionDhondt(
+        nombre,
+        listas,
+        nombresDeListas,
+        descripcion,
+        escanios
+      );
+    }
     handleClose();
   }
 
@@ -328,31 +603,113 @@ function InicioAdmin() {
               />
             </Form.Group>
 
-            {candidatos.map((candidato, index) => (
-              <Form.Group controlId={`formCandidato${index}`} key={index}>
-                <Form.Label>Candidato {index + 1}</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Ingresa el nombre del candidato"
-                  value={candidato}
-                  onChange={(e) => handleCandidatoChange(e, index)}
-                />
-                <Button
-                  variant="danger"
-                  onClick={() => handleRemoveCandidato(index)}
-                >
-                  Eliminar candidato
-                </Button>
-              </Form.Group>
-            ))}
+            <Form.Group controlId="formMetodoConteo">
+              <Form.Label>Método de conteo</Form.Label>
+              <Form.Control
+                as="select"
+                value={metodoConteo}
+                onChange={(e) => setMetodoConteo(e.target.value)}
+              >
+                <option value="">Selecciona un método</option>
+                <option value="mayoria-absoluta">Mayoría Absoluta</option>
+                <option value="dhondt">D'Hondt</option>
+              </Form.Control>
+            </Form.Group>
 
-            <Button variant="primary" onClick={handleAddCandidato}>
-              Agregar candidato
-            </Button>
+            {metodoConteo === "mayoria-absoluta" &&
+              candidatos.map((candidato, index) => (
+                <Form.Group controlId={`formCandidato${index}`} key={index}>
+                  <Form.Label>Candidato {index + 1}</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Ingresa el nombre del candidato"
+                    value={candidato}
+                    onChange={(e) => handleCandidatoChange1(e, index)}
+                  />
+                  <Button variant="primary" onClick={handleAddCandidato1}>
+                    Agregar candidato
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleRemoveCandidato1(index)}
+                  >
+                    Eliminar candidato
+                  </Button>
+                </Form.Group>
+              ))}
+
+            {metodoConteo === "dhondt" &&
+              listas.map((lista, indexLista) => (
+                <div key={indexLista}>
+                  <h5>Lista {indexLista + 1}</h5>
+                  <Form.Group controlId={`formNombreLista${indexLista}`}>
+                    <Form.Label>Nombre de la lista</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Ingresa el nombre de la lista"
+                      value={nombresDeListas[indexLista]}
+                      onChange={(e) => handleNombreListaChange(e, indexLista)}
+                    />
+                  </Form.Group>
+                  <Button variant="primary" onClick={handleAddLista}>
+                    Agregar lista
+                  </Button>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleRemoveLista(indexLista)}
+                  >
+                    Eliminar lista
+                  </Button>
+                  {lista.map((candidato, indexCandidato) => (
+                    <Form.Group
+                      controlId={`formCandidato${indexLista}${indexCandidato}`}
+                      key={indexCandidato}
+                    >
+                      <Form.Label>Candidato {indexCandidato + 1}</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Ingresa el nombre del candidato"
+                        value={candidato}
+                        onChange={(e) =>
+                          handleCandidatoChange(e, indexLista, indexCandidato)
+                        }
+                      />
+                      <Button
+                        variant="primary"
+                        onClick={() => handleAddCandidato(indexLista)}
+                      >
+                        Agregar candidato
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() =>
+                          handleRemoveCandidato(indexLista, indexCandidato)
+                        }
+                      >
+                        Eliminar candidato
+                      </Button>
+                    </Form.Group>
+                  ))}
+                </div>
+              ))}
+
+            {metodoConteo === "dhondt" && (
+              <div>
+                <Form.Group controlId="formEscanios">
+                  <Form.Label>Número de escanios</Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="1"
+                    value={escanios}
+                    onChange={(e) => setEscanios(e.target.value)}
+                  />
+                </Form.Group>
+              </div>
+            )}
 
             <Form.Control
               type="password"
-              placeholder="Ingresa la contraseña del administrador"
+              placeholder="Ingresa la contrasenia del administrador"
               value={crearVotacionPassword}
               onChange={(e) => setCrearVotacionPassword(e.target.value)}
             />
@@ -386,7 +743,7 @@ function InicioAdmin() {
             </Form.Group>
             <Form.Control
               type="password"
-              placeholder="Ingresa la contraseña del administrador"
+              placeholder="Ingresa la contrasenia del administrador"
               value={eliminarVotacionPassword}
               onChange={(e) => setEliminarVotacionPassword(e.target.value)}
             />
@@ -433,9 +790,9 @@ function InicioAdmin() {
                   <td>
                     <Button
                       variant="primary"
-                      onClick={() => verResultados(index)}
+                      onClick={() => verDetallesTerminadas(index)}
                     >
-                      <FontAwesomeIcon icon={faPoll} /> Ver Resultados
+                      <FontAwesomeIcon icon={faEye} /> Ver Detalles
                     </Button>
                   </td>
                 </tr>
@@ -443,6 +800,42 @@ function InicioAdmin() {
             </tbody>
           </Table>
         </Modal.Body>
+      </Modal>
+
+      <Modal show={showResultados} onHide={() => setShowResultados(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Resultados D'Hondt</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <table>
+            <thead>
+              <tr>
+                <th>Lista</th>
+                <th>Nombre</th>
+                <th>Votos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {resultados.map((lista, index) =>
+                lista.candidatos.map((candidato, i) => (
+                  <tr key={index + "-" + i}>
+                    {i === 0 && (
+                      <td rowSpan={lista.candidatos.length}>{lista.lista}</td>
+                    )}
+                    <td>{candidato.nombre}</td>
+                    <td>{candidato.votos}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowResultados(false)}>
+            Cerrar
+          </Button>
+        </Modal.Footer>
       </Modal>
 
       <Table striped bordered hover>
@@ -461,12 +854,12 @@ function InicioAdmin() {
               <td>{votacion.nombre}</td>
               <td>{votacion.descripcion}</td>
               <td>
-                <Button variant="primary" onClick={() => verCandidatos(index)}>
+                <Button variant="primary" onClick={() => verDetalles(index)}>
                   <FontAwesomeIcon icon={faEye} /> Ver Detalles
                 </Button>
                 <Form.Control
                   type="password"
-                  placeholder="Ingresa la contraseña del administrador para terminar una votación"
+                  placeholder="Ingresa la contrasenia del administrador para terminar una votación"
                   value={terminarVotacionPassword}
                   onChange={(e) => setTerminarVotacionPassword(e.target.value)}
                 />

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "./Votacion.sol";
+import "./VotacionDHondt.sol";
 
 contract VotacionFactory {
     // Array para almacenar las direcciones de todas las votaciones
@@ -9,11 +10,16 @@ contract VotacionFactory {
     // Array para almacenar las direcciones de todas las votaciones terminadas
     address[] public votacionesTerminadas;
 
-    // Función para crear una nueva votación
     function crearVotacion(string memory nombre, string[] memory candidatos, string memory descripcion) public {
-        Votacion votacion = new Votacion(nombre, candidatos, address(this), descripcion);
+        Votacion votacion = new Votacion(nombre, candidatos, address(this), descripcion, "mayoria-absoluta");
         votaciones.push(address(votacion));
     }
+
+    function crearVotacionDhondt(string memory nombre, string[][] memory listas, string[] memory _nombresDeListas, string memory descripcion, uint escanios) public {
+        VotacionDHondt votacion = new VotacionDHondt(nombre, listas, _nombresDeListas, address(this), descripcion, escanios, "dhondt");
+        votaciones.push(address(votacion));
+    }
+
 
     // Función para obtener todas las votaciones
     function obtenerVotaciones() public view returns (address[] memory) {

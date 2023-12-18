@@ -13,20 +13,24 @@ contract Votacion {
     // Mapeo de candidato a votos
     mapping(uint => uint) public votos;
 
+    string public metodoConteo;
+
+
     // Dirección del creador de la votación
     address public factory;
 
     // Descripción de la votación
     string descripcion;
 
-    // Constructor que recibe el nombre y los candidatos
-    constructor(string memory _nombre, string[] memory _candidatos, address _factory, string memory _descripcion) {
+    constructor(string memory _nombre, string[] memory _candidatos, address _factory, string memory _descripcion, string memory _metodoConteo) {
         nombre = _nombre;
         estado = true;
         candidatos = _candidatos;
         factory = _factory; 
         descripcion = _descripcion;
+        metodoConteo = _metodoConteo;
     }
+
 
     // Función para eliminar la votación
     function eliminar() public {
@@ -76,4 +80,9 @@ contract Votacion {
     function obtenerDescripcion() public view returns (string memory) {
         return descripcion;
     }
+
+    function obtenerMetodoConteo() public view returns (string memory) {
+        return metodoConteo;
+    }
+
 }
