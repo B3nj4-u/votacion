@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Modal, Table } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import votacionFactory from "../abis/VotacionFactory.json";
 import votacion from "../abis/Votacion.json";
 import votacionDHondt from "../abis/VotacionDHondt.json";
 import Navigation from "./Navbar";
+import CrearVotacionModal from "./modals/CrearVotacionModal";
+import EliminarVotacionModal from "./modals/EliminarVotacionModal";
+import TablaVotacionesAdmin from "./tables/TablaVotacionesAdmin";
+import HistorialModal from "./modals/HistorialModal";
+import CandidatosModal from "./modals/CandidatosModal";
+import ResultadosModal from "./modals/ResultadosModal";
 import dhondt from "dhondt";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faStop,
-  faPlus,
-  faTrash,
-  faHistory,
-  faPoll,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faHistory } from "@fortawesome/free-solid-svg-icons";
 require("dotenv").config();
 const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
 
@@ -267,8 +266,10 @@ function InicioAdmin() {
     console.log(metodoConteo);
 
     if (metodoConteo === "mayoria-absoluta") {
+      console.log(indice);
       verCandidatos(indice);
     } else if (metodoConteo === "dhondt") {
+      console.log(indice);
       obtenerResultadosDhondt(indice);
     }
   }
@@ -288,7 +289,6 @@ function InicioAdmin() {
       obtenerResultadosDhondtTerminada(indice);
     }
   }
-  
 
   async function verCandidatos(indice) {
     const votacionContract = new ethers.Contract(
@@ -319,49 +319,52 @@ function InicioAdmin() {
 
       console.log("Contrato obtenido:", votacionContract);
 
-      // Obtén los votos de cada lista del contrato
-      const votos = await Promise.all(
-        listas.map(async (lista, i) => {
-          const votosLista = await votacionContract.obtenerVotosLista(i);
-          return votosLista.reduce((a, b) => a + b.toNumber(), 0);
-        })
-      );
-
-      console.log("Votos:", votos);
-
       // Obtén todos los votos individuales de cada candidato en cada lista
       const votosDhondtBigNumber =
         await votacionContract.obtenerTodosLosVotos();
-      const votosDhondt = votosDhondtBigNumber.map((lista) =>
+      const votosPorCandidato = votosDhondtBigNumber.map((lista) =>
         lista.map((voto) => voto.toNumber())
       );
+
+      // Suma los votos de cada candidato en una lista para obtener el total de votos de cada lista
+      const votosPorLista = votosPorCandidato.map((votosLista) =>
+        votosLista.reduce((a, b) => a + b, 0)
+      );
+
+      console.log("Votos por lista:", votosPorLista);
 
       // Obtener los escaños
       const escanios = await votacionContract.obtenerEscanios();
       console.log("Escanios:", escanios);
 
       // Calcula los escaños usando la biblioteca dhondt
-      const asignacion = dhondt.compute(votos, escanios);
+      const asignacion = dhondt.compute(votosPorLista, escanios);
       console.log("Asignación:", asignacion);
 
       const resultados = [];
       for (let i = 0; i < asignacion.length; i++) {
-        const candidatos = [];
-        for (let j = 0; j < listas[i].length; j++) {
-          candidatos.push({
-            nombre: listas[i][j],
-            votos: votosDhondt[i][j],
+        if (asignacion[i] > 0) {
+          const nombreLista = await votacionContract.obtenerNombreLista(i);
+          const numCandidatos =
+            await votacionContract.obtenerNumCandidatosLista(i);
+          let candidatos = [];
+          for (let j = 0; j < numCandidatos; j++) {
+            const candidato = await votacionContract.obtenerCandidatoLista(
+              i,
+              j
+            );
+            const votosCandidato = votosPorCandidato[i][j];
+            candidatos.push({ nombre: candidato, votos: votosCandidato });
+          }
+          // Ordena los candidatos por votos en orden descendente
+          candidatos.sort((a, b) => b.votos - a.votos);
+          // Selecciona solo los candidatos que fueron electos
+          const candidatosElectos = candidatos.slice(0, asignacion[i]);
+          resultados.push({
+            lista: nombreLista,
+            candidatos: candidatosElectos,
           });
         }
-        // Ordena los candidatos por votos en orden descendente
-        candidatos.sort((a, b) => b.votos - a.votos);
-        // Selecciona solo los candidatos que fueron electos
-        const candidatosElectos = candidatos.slice(0, asignacion[i]);
-        resultados.push({
-          lista: nombresDeListas[i],
-          escanios: asignacion[i],
-          candidatos: candidatosElectos,
-        });
       }
 
       console.log("Resultados:", resultados);
@@ -380,74 +383,38 @@ function InicioAdmin() {
 
   async function obtenerResultadosDhondt(indice) {
     try {
-      console.log("Iniciando obtenerResultadosDhondt...");
-
       const votacionContract = new ethers.Contract(
         votaciones[indice].direccion,
         votacionDHondt.abi,
         wallet
       );
-
-      console.log("Contrato obtenido:", votacionContract);
-
-      // Obtén los votos de cada lista del contrato
-      const votos = await Promise.all(
-        listas.map(async (lista, i) => {
-          const votosLista = await votacionContract.obtenerVotosLista(i);
-          return votosLista.reduce((a, b) => a + b.toNumber(), 0);
-        })
-      );
-
-      console.log("Votos:", votos);
-
-      // Obtén todos los votos individuales de cada candidato en cada lista
-      const votosDhondtBigNumber =
-        await votacionContract.obtenerTodosLosVotos();
-      const votosDhondt = votosDhondtBigNumber.map((lista) =>
-        lista.map((voto) => voto.toNumber())
-      );
-
-      // Obtener los escaños
-      const escanios = await votacionContract.obtenerEscanios();
-      console.log("Escanios:", escanios);
-
-      // Calcula los escaños usando la biblioteca dhondt
-      const asignacion = dhondt.compute(votos, escanios);
-      console.log("Asignación:", asignacion);
-
-      const resultados = [];
-      for (let i = 0; i < asignacion.length; i++) {
-        const candidatos = [];
-        for (let j = 0; j < listas[i].length; j++) {
-          candidatos.push({
-            nombre: listas[i][j],
-            votos: votosDhondt[i][j],
-          });
+  
+      const numListas = await votacionContract.obtenerNumListas();
+      let resultados = [];
+  
+      for (let i = 0; i < numListas; i++) {
+        let lista = await votacionContract.obtenerNombreLista(i);
+        let votosLista = await votacionContract.obtenerVotosLista(i);
+        let numCandidatos = await votacionContract.obtenerNumCandidatosLista(i);
+        let candidatos = [];
+  
+        for (let j = 0; j < numCandidatos; j++) {
+          let nombreCandidato = await votacionContract.obtenerCandidatoLista(i, j);
+          candidatos.push({ nombre: nombreCandidato, votos: votosLista[j].toString() });
         }
-        // Ordena los candidatos por votos en orden descendente
-        candidatos.sort((a, b) => b.votos - a.votos);
-        // Selecciona solo los candidatos que fueron electos
-        const candidatosElectos = candidatos.slice(0, asignacion[i]);
-        resultados.push({
-          lista: nombresDeListas[i],
-          escanios: asignacion[i],
-          candidatos: candidatosElectos,
-        });
+  
+        resultados.push({ lista: lista, candidatos: candidatos });
       }
-
-      console.log("Resultados:", resultados);
-
-      // Actualiza el estado de los resultados y muestra el modal de resultados
+  
       setResultados(resultados);
       setShowResultados(true);
-      console.log("Estado actualizado, modal debería mostrarse");
-
-      // Cierra el modal actual
       handleClose();
     } catch (error) {
-      console.error("Error en obtenerResultadosDhondt:", error);
+      console.error("Error al obtener los resultados: ", error);
     }
   }
+  
+  
 
   async function verResultados(indice) {
     const votacionContract = new ethers.Contract(
@@ -577,303 +544,71 @@ function InicioAdmin() {
         </Button>
       </div>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Crear Votación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmit}>
-            <Form.Group controlId="formNombre">
-              <Form.Label>Nombre de la votación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa el nombre de la votación"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-              />
-            </Form.Group>
+      <TablaVotacionesAdmin
+        votaciones={votaciones} // Asegúrate de pasar las votaciones necesarias
+        terminarVotacionPassword={terminarVotacionPassword}
+        setTerminarVotacionPassword={setTerminarVotacionPassword}
+        terminarVotacion={terminarVotacion}
+        verDetalles={verDetalles}
+      />
 
-            <Form.Group controlId="formDescripcion">
-              <Form.Label>Descripción de la votación</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa la descripción de la votación"
-                value={descripcion}
-                onChange={(e) => setDescripcion(e.target.value)}
-              />
-            </Form.Group>
+      <CrearVotacionModal
+        show={show}
+        handleClose={handleClose}
+        handleSubmit={handleSubmit}
+        nombre={nombre}
+        setNombre={setNombre}
+        descripcion={descripcion}
+        setDescripcion={setDescripcion}
+        metodoConteo={metodoConteo}
+        setMetodoConteo={setMetodoConteo}
+        candidatos={candidatos}
+        handleCandidatoChange1={handleCandidatoChange1}
+        handleAddCandidato1={handleAddCandidato1}
+        handleRemoveCandidato1={handleRemoveCandidato1}
+        listas={listas}
+        nombresDeListas={nombresDeListas}
+        handleNombreListaChange={handleNombreListaChange}
+        handleAddLista={handleAddLista}
+        handleRemoveLista={handleRemoveLista}
+        handleCandidatoChange={handleCandidatoChange}
+        escanios={escanios}
+        setEscanios={setEscanios}
+        crearVotacionPassword={crearVotacionPassword}
+        setCrearVotacionPassword={setCrearVotacionPassword}
+        handleAddCandidato={handleAddCandidato}
+        handleRemoveCandidato={handleRemoveCandidato}
+      />
 
-            <Form.Group controlId="formMetodoConteo">
-              <Form.Label>Método de conteo</Form.Label>
-              <Form.Control
-                as="select"
-                value={metodoConteo}
-                onChange={(e) => setMetodoConteo(e.target.value)}
-              >
-                <option value="">Selecciona un método</option>
-                <option value="mayoria-absoluta">Mayoría Absoluta</option>
-                <option value="dhondt">D'Hondt</option>
-              </Form.Control>
-            </Form.Group>
+      <EliminarVotacionModal
+        showEliminar={showEliminar}
+        handleCloseEliminar={handleCloseEliminar}
+        handleSubmitEliminar={handleSubmitEliminar}
+        votacionAEliminar={votacionAEliminar}
+        setVotacionAEliminar={setVotacionAEliminar}
+        eliminarVotacionPassword={eliminarVotacionPassword}
+        setEliminarVotacionPassword={setEliminarVotacionPassword}
+        votaciones={votaciones}
+      />
 
-            {metodoConteo === "mayoria-absoluta" &&
-              candidatos.map((candidato, index) => (
-                <Form.Group controlId={`formCandidato${index}`} key={index}>
-                  <Form.Label>Candidato {index + 1}</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa el nombre del candidato"
-                    value={candidato}
-                    onChange={(e) => handleCandidatoChange1(e, index)}
-                  />
-                  <Button variant="primary" onClick={handleAddCandidato1}>
-                    Agregar candidato
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleRemoveCandidato1(index)}
-                  >
-                    Eliminar candidato
-                  </Button>
-                </Form.Group>
-              ))}
+      <CandidatosModal
+        showCandidatos={showCandidatos}
+        handleCloseCandidatos={handleCloseCandidatos}
+        candidatosInfo={candidatosInfo}
+      />
 
-            {metodoConteo === "dhondt" &&
-              listas.map((lista, indexLista) => (
-                <div key={indexLista}>
-                  <h5>Lista {indexLista + 1}</h5>
-                  <Form.Group controlId={`formNombreLista${indexLista}`}>
-                    <Form.Label>Nombre de la lista</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Ingresa el nombre de la lista"
-                      value={nombresDeListas[indexLista]}
-                      onChange={(e) => handleNombreListaChange(e, indexLista)}
-                    />
-                  </Form.Group>
-                  <Button variant="primary" onClick={handleAddLista}>
-                    Agregar lista
-                  </Button>
-                  <Button
-                    variant="danger"
-                    onClick={() => handleRemoveLista(indexLista)}
-                  >
-                    Eliminar lista
-                  </Button>
-                  {lista.map((candidato, indexCandidato) => (
-                    <Form.Group
-                      controlId={`formCandidato${indexLista}${indexCandidato}`}
-                      key={indexCandidato}
-                    >
-                      <Form.Label>Candidato {indexCandidato + 1}</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Ingresa el nombre del candidato"
-                        value={candidato}
-                        onChange={(e) =>
-                          handleCandidatoChange(e, indexLista, indexCandidato)
-                        }
-                      />
-                      <Button
-                        variant="primary"
-                        onClick={() => handleAddCandidato(indexLista)}
-                      >
-                        Agregar candidato
-                      </Button>
-                      <Button
-                        variant="danger"
-                        onClick={() =>
-                          handleRemoveCandidato(indexLista, indexCandidato)
-                        }
-                      >
-                        Eliminar candidato
-                      </Button>
-                    </Form.Group>
-                  ))}
-                </div>
-              ))}
+      <ResultadosModal
+        showResultados={showResultados}
+        setShowResultados={setShowResultados}
+        resultados={resultados}
+      />
 
-            {metodoConteo === "dhondt" && (
-              <div>
-                <Form.Group controlId="formEscanios">
-                  <Form.Label>Número de escanios</Form.Label>
-                  <Form.Control
-                    type="number"
-                    min="1"
-                    value={escanios}
-                    onChange={(e) => setEscanios(e.target.value)}
-                  />
-                </Form.Group>
-              </div>
-            )}
-
-            <Form.Control
-              type="password"
-              placeholder="Ingresa la contrasenia del administrador"
-              value={crearVotacionPassword}
-              onChange={(e) => setCrearVotacionPassword(e.target.value)}
-            />
-
-            <Button variant="success" type="submit">
-              Confirmar y crear
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showEliminar} onHide={handleCloseEliminar}>
-        <Modal.Header closeButton>
-          <Modal.Title>Eliminar Votación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handleSubmitEliminar}>
-            <Form.Group controlId="formEliminar">
-              <Form.Label>Selecciona la votación a eliminar</Form.Label>
-              <Form.Control
-                as="select"
-                value={votacionAEliminar}
-                onChange={(e) => setVotacionAEliminar(e.target.value)}
-              >
-                {votaciones.map((votacion, index) => (
-                  <option key={index} value={index}>
-                    {votacion.nombre}
-                  </option>
-                ))}
-              </Form.Control>
-            </Form.Group>
-            <Form.Control
-              type="password"
-              placeholder="Ingresa la contrasenia del administrador"
-              value={eliminarVotacionPassword}
-              onChange={(e) => setEliminarVotacionPassword(e.target.value)}
-            />
-            <Button variant="danger" type="submit">
-              Confirmar y eliminar
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showCandidatos} onHide={handleCloseCandidatos}>
-        <Modal.Header closeButton>
-          <Modal.Title>Candidatos</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {candidatosInfo.map((info, index) => (
-            <p key={index}>
-              {info.candidato}: {info.votos} votos
-            </p>
-          ))}
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showHistorial} onHide={handleCloseHistorial} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Historial de Votaciones</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {votacionesTerminadas.map((votacion, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{votacion.nombre}</td>
-                  <td>{votacion.descripcion}</td>
-                  <td>
-                    <Button
-                      variant="primary"
-                      onClick={() => verDetallesTerminadas(index)}
-                    >
-                      <FontAwesomeIcon icon={faEye} /> Ver Detalles
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showResultados} onHide={() => setShowResultados(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Resultados D'Hondt</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <table>
-            <thead>
-              <tr>
-                <th>Lista</th>
-                <th>Nombre</th>
-                <th>Votos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {resultados.map((lista, index) =>
-                lista.candidatos.map((candidato, i) => (
-                  <tr key={index + "-" + i}>
-                    {i === 0 && (
-                      <td rowSpan={lista.candidatos.length}>{lista.lista}</td>
-                    )}
-                    <td>{candidato.nombre}</td>
-                    <td>{candidato.votos}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </Modal.Body>
-
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowResultados(false)}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {votaciones.map((votacion, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{votacion.nombre}</td>
-              <td>{votacion.descripcion}</td>
-              <td>
-                <Button variant="primary" onClick={() => verDetalles(index)}>
-                  <FontAwesomeIcon icon={faEye} /> Ver Detalles
-                </Button>
-                <Form.Control
-                  type="password"
-                  placeholder="Ingresa la contrasenia del administrador para terminar una votación"
-                  value={terminarVotacionPassword}
-                  onChange={(e) => setTerminarVotacionPassword(e.target.value)}
-                />
-                <Button
-                  variant="warning"
-                  onClick={() => terminarVotacion(index)}
-                >
-                  <FontAwesomeIcon icon={faStop} /> Terminar Votación
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <HistorialModal
+        showHistorial={showHistorial}
+        handleCloseHistorial={handleCloseHistorial}
+        votacionesTerminadas={votacionesTerminadas}
+        verDetallesTerminadas={verDetallesTerminadas}
+      />
     </div>
   );
 }

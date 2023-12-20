@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
 import cuentaFactory from "../abis/CuentaFactory.json";
 import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
+import ConsultaVotoForm from './forms/ConsultaVotoForm';
+import VotosModal from './modals/VotosModal';
 
 const { ethers } = require("ethers");
 
@@ -56,34 +57,16 @@ function ConsultaVoto() {
         <div className="row">
           <main role="main" className="col-lg-12 d-flex text-center">
             <div className="content mr-auto ml-auto">
-              <Form onSubmit={handleConsulta}>
-                <Form.Group controlId="formDireccionUsuario">
-                  <Form.Label>Dirección del Usuario</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa la dirección del usuario"
-                    value={direccionUsuario}
-                    onChange={(e) => setDireccionUsuario(e.target.value)}
-                  />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                  Consultar Votos
-                </Button>
-              </Form>
-              <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Votos</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  {votos &&
-                    votos.map((voto, index) => (
-                      <div key={index}>
-                        <h5>Votación: {voto.nombreVotacion}</h5>
-                        <p>Candidato: {voto.nombreCandidato}</p>
-                      </div>
-                    ))}
-                </Modal.Body>
-              </Modal>
+              <ConsultaVotoForm
+                direccionUsuario={direccionUsuario}
+                setDireccionUsuario={setDireccionUsuario}
+                handleConsulta={handleConsulta}
+              />
+              <VotosModal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                votos={votos}
+              />
             </div>
           </main>
         </div>
