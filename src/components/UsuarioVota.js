@@ -5,6 +5,7 @@ import votacion from "../abis/Votacion.json";
 import votacionDHondt from "../abis/VotacionDHondt.json";
 import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
+import UsuarioVotaForm from "./forms/UsuarioVotaForm";
 
 const { ethers } = require("ethers");
 
@@ -138,50 +139,13 @@ function UsuarioVota() {
         <Row className="justify-content-md-center">
           <Col md="auto">
             <h1>Selecciona un candidato para votar</h1>
-            <Form>
-              {metodoConteo === "mayoria-absoluta"
-                ? // Muestra los candidatos para la votación de mayoría absoluta
-                  candidatos.map((candidato, index) => (
-                    <div key={index} className="mb-3">
-                      <Form.Check
-                        type="radio"
-                        id={`candidato-${index}`}
-                        name="candidato"
-                        label={candidato}
-                        value={index}
-                        onChange={() => setSelectedCandidato(index)}
-                      />
-                    </div>
-                  ))
-                : // Muestra los candidatos para la votación D'Hondt
-                  candidatos.map((lista, indexLista) => (
-                    <div key={indexLista}>
-                      <h2>Lista {indexLista + 1}</h2>
-                      {lista.map((candidato, indexCandidato) => (
-                        <div key={indexCandidato} className="mb-3">
-                          <Form.Check
-                            type="radio"
-                            id={`candidato-${indexLista}-${indexCandidato}`}
-                            name="candidato"
-                            label={candidato}
-                            value={`${indexLista}-${indexCandidato}`}
-                            onChange={(e) => {
-                              const [lista, candidato] =
-                                e.target.value.split("-");
-                              setSelectedCandidato({
-                                lista: parseInt(lista),
-                                candidato: parseInt(candidato),
-                              });
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-              <Button variant="primary" onClick={votar}>
-                Votar
-              </Button>
-            </Form>
+            <UsuarioVotaForm
+              metodoConteo={metodoConteo}
+              candidatos={candidatos}
+              selectedCandidato={selectedCandidato}
+              setSelectedCandidato={setSelectedCandidato}
+              votar={votar}
+            />
           </Col>
         </Row>
       </Container>
