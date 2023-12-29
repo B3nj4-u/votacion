@@ -6,10 +6,18 @@ import ConsultaVotoForm from './forms/ConsultaVotoForm';
 import VotosModal from './modals/VotosModal';
 
 const { ethers } = require("ethers");
-
-const provider = new ethers.providers.JsonRpcProvider(`http://127.0.0.1:7545`);
-const privateKey =
-  "0xec362c8b60288f86de32edff2a845407480eb611d71d0848543ff97847097275";
+require("dotenv").config();
+const privateKey = process.env.REACT_APP_PRIVATE_KEY;
+const providerUrl = process.env.REACT_APP_PROVIDER_URL;
+if (!providerUrl) {
+  console.error("Falta providerUrl. Verifica tu archivo .env.");
+  process.exit(1);
+}
+if (!privateKey) {
+  console.error("Falta privateKey. Verifica tu archivo .env.");
+  process.exit(1);
+}
+const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 const wallet = new ethers.Wallet(privateKey, provider);
 
 function ConsultaVoto() {

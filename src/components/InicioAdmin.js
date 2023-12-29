@@ -545,7 +545,7 @@ function InicioAdmin() {
       </div>
 
       <TablaVotacionesAdmin
-        votaciones={votaciones} // Asegúrate de pasar las votaciones necesarias
+        votaciones={votaciones}
         terminarVotacionPassword={terminarVotacionPassword}
         setTerminarVotacionPassword={setTerminarVotacionPassword}
         terminarVotacion={terminarVotacion}

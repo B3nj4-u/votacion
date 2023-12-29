@@ -3,18 +3,33 @@ import { useNavigate } from "react-router-dom";
 import cuentaFactory from "../abis/CuentaFactory.json";
 import cuenta from "../abis/Cuenta.json";
 import { Form, Button, Modal } from "react-bootstrap";
+import CrearCuentaModal from "./modals/CrearCuentaModal";
+import LoginForm from "./forms/LoginForm";
+import AdminLoginModal from "./modals/AdminLoginModal";
 
 import Navigation from "./Navbar";
 import MyCarousel from "./Carousel";
 require("dotenv").config();
 const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
+const privateKey = process.env.REACT_APP_PRIVATE_KEY;
+const providerUrl = process.env.REACT_APP_PROVIDER_URL;
+// Validación de variables de entorno
+if (!adminPassword) {
+  console.error("Falta adminPassword. Verifica tu archivo .env.");
+  process.exit(1);
+}
+if (!providerUrl) {
+  console.error("Falta providerUrl. Verifica tu archivo .env.");
+  process.exit(1);
+}
+if (!privateKey) {
+  console.error("Falta privateKey. Verifica tu archivo .env.");
+  process.exit(1);
+}
 
 // Creacion de la billetera
 const { ethers } = require("ethers");
-
-const provider = new ethers.providers.JsonRpcProvider(`http://127.0.0.1:7545`);
-const privateKey =
-  "0xec362c8b60288f86de32edff2a845407480eb611d71d0848543ff97847097275";
+const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 const wallet = new ethers.Wallet(privateKey, provider);
 
 function Home() {
@@ -28,8 +43,7 @@ function Home() {
   const [showModal, setShowModal] = useState(false);
   const [direccionUsuario, setDireccionUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
-  
-  
+
   const navigate = useNavigate();
   const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
   const handleCloseAdminLoginModal = () => setShowAdminLoginModal(false);
@@ -40,7 +54,7 @@ function Home() {
   useEffect(() => {
     loadBlockchainData();
   }, []);
-  
+
   function handleSubmitAdminLogin(event) {
     event.preventDefault();
     const password = event.target.formAdminPassword.value;
@@ -51,7 +65,7 @@ function Home() {
       alert("Contraseña incorrecta!");
     }
   }
-  
+
   async function loadBlockchainData() {
     const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
     const networkData = cuentaFactory.networks[networkId];
@@ -188,109 +202,34 @@ function Home() {
         <div className="row">
           <main role="main" className="col-lg-12 d-flex text-center">
             <div className="content mr-auto ml-auto">
-              <Form onSubmit={handleLogin}>
-                <Form.Group controlId="formDireccionUsuario">
-                  <Form.Label>Dirección del Usuario</Form.Label>
-                  <Form.Control
-                    type="text"
-                    placeholder="Ingresa la dirección del usuario"
-                    value={direccionUsuario}
-                    onChange={(e) => setDireccionUsuario(e.target.value)}
-                  />
-                </Form.Group>
-                <Form.Group controlId="formContrasenaLogin">
-                  <Form.Label>Contraseña</Form.Label>
-                  <Form.Control
-                    type="password"
-                    placeholder="Ingresa tu contraseña"
-                    value={contrasena}
-                    onChange={(e) => setContrasena(e.target.value)}
-                  />
-                </Form.Group>
-                <Button variant="primary" type="submit">
-                  Iniciar Sesión
-                </Button>
-              </Form>
+              <LoginForm
+                handleLogin={handleLogin}
+                direccionUsuario={direccionUsuario}
+                setDireccionUsuario={setDireccionUsuario}
+                contrasena={contrasena}
+                setContrasena={setContrasena}
+              />
               <Button variant="link" onClick={() => setShowModal(true)}>
                 ¿No tienes cuenta? ¡Crea una!
               </Button>
-              <Modal show={showModal} onHide={() => setShowModal(false)}>
-                <Modal.Header closeButton>
-                  <Modal.Title>Crear Cuenta</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formNombre">
-                      <Form.Label>Nombre</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Ingresa tu nombre"
-                        name="nombre"
-                        value={nombre}
-                        onChange={(e) => setNombre(e.target.value)}
-                      />
-                    </Form.Group>
-
-                    <Form.Group controlId="formRut">
-                      <Form.Label>RUT</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Ingresa tu RUT"
-                        name="rut"
-                        value={rut}
-                        onChange={(e) => setRut(e.target.value)}
-                      />
-                    </Form.Group>
-
-                    <Form.Group controlId="formFechaNacimiento">
-                      <Form.Label>Fecha de Nacimiento</Form.Label>
-                      <Form.Control
-                        type="date"
-                        placeholder="Ingresa tu fecha de nacimiento"
-                        name="fechaNacimiento"
-                        value={fechaNacimiento}
-                        onChange={(e) => setFechaNacimiento(e.target.value)}
-                      />
-                    </Form.Group>
-
-                    <Form.Group controlId="formContrasena">
-                      <Form.Label>Contraseña</Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Ingresa tu contraseña"
-                        value={contrasena}
-                        onChange={(e) => setContrasena(e.target.value)}
-                      />
-                    </Form.Group>
-
-                    <Button variant="primary" type="submit">
-                      Crear Cuenta
-                    </Button>
-                  </Form>
-                </Modal.Body>
-              </Modal>
-              <Modal
-                show={showAdminLoginModal}
-                onHide={handleCloseAdminLoginModal}
-              >
-                <Modal.Header closeButton>
-                  <Modal.Title>Contraseña del administrador</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                  <Form onSubmit={handleSubmitAdminLogin}>
-                    <Form.Group controlId="formAdminPassword">
-                      <Form.Label>Contraseña</Form.Label>
-                      <Form.Control
-                        type="password"
-                        placeholder="Ingresa la contraseña del administrador"
-                      />
-                    </Form.Group>
-                    <Button variant="primary" type="submit">
-                      Confirmar
-                    </Button>
-                  </Form>
-                </Modal.Body>
-              </Modal>
+              <CrearCuentaModal
+                showModal={showModal}
+                setShowModal={setShowModal}
+                handleSubmit={handleSubmit}
+                nombre={nombre}
+                setNombre={setNombre}
+                rut={rut}
+                setRut={setRut}
+                fechaNacimiento={fechaNacimiento}
+                setFechaNacimiento={setFechaNacimiento}
+                contrasena={contrasena}
+                setContrasena={setContrasena}
+              />
+              <AdminLoginModal
+                showAdminLoginModal={showAdminLoginModal}
+                handleCloseAdminLoginModal={handleCloseAdminLoginModal}
+                handleSubmitAdminLogin={handleSubmitAdminLogin}
+              />
             </div>
           </main>
         </div>
