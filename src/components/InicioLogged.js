@@ -10,6 +10,9 @@ import votacionDHondt from "../abis/VotacionDHondt.json";
 import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
 import dhondt from "dhondt";
+import CandidatosModalUser from "./modals/CandidatosModalUser";
+import HistorialModalUser from "./modals/HistorialModalUser";
+import TablaVotacionesUser from "./tables/TablaVotacionesUser";
 
 const { ethers } = require("ethers");
 
@@ -263,12 +266,6 @@ function InicioLogged() {
       console.error("Error en obtenerResultadosDhondt:", error);
     }
   }
-  
-  
-  
-  
-  
-
   return (
     <div>
       <Navigation account={account} />
@@ -277,77 +274,23 @@ function InicioLogged() {
       <Button variant="info" onClick={handleShowHistorial}>
         <FontAwesomeIcon icon={faHistory} /> Historial de Votaciones
       </Button>
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {votaciones.map((votacion, index) => (
-            <tr key={index}>
-              <td>{index + 1}</td>
-              <td>{votacion.nombre}</td>
-              <td>{votacion.descripcion}</td>
-              <td>
-                <Button variant="primary" onClick={() => verCandidatos(index)}>
-                  <FontAwesomeIcon icon={faEye} /> Ver Candidatos
-                </Button>
-                <Button variant="success" onClick={() => irAVotar(index)}>
-                  <FontAwesomeIcon icon={faVoteYea} /> Ir a Votar
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-      <Modal show={showCandidatos} onHide={handleCloseCandidatos}>
-        <Modal.Header closeButton>
-          <Modal.Title>Candidatos</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {candidatosInfo.map((info, index) => (
-            <p key={index}>{info.candidato}</p>
-          ))}
-        </Modal.Body>
-      </Modal>
-      <Modal show={showHistorial} onHide={handleCloseHistorial} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Historial de Votaciones</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {votacionesTerminadas.map((votacion, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{votacion.nombre}</td>
-                  <td>{votacion.descripcion}</td>
-                  <td>
-                    <Button
-                      variant="primary"
-                      onClick={() => verDetallesTerminadas(index)}
-                    >
-                      <FontAwesomeIcon icon={faEye} /> Ver Resultados
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Modal.Body>
-      </Modal>
+      <TablaVotacionesUser
+        votaciones={votaciones}
+        verCandidatos={verCandidatos}
+        irAVotar={irAVotar}
+      />
+      <CandidatosModalUser
+        show={showCandidatos}
+        handleClose={handleCloseCandidatos}
+        candidatosInfo={candidatosInfo}
+      />
+
+      <HistorialModalUser
+        show={showHistorial}
+        handleClose={handleCloseHistorial}
+        votacionesTerminadas={votacionesTerminadas}
+        verDetallesTerminadas={verDetallesTerminadas}
+      />
     </div>
   );
 }
