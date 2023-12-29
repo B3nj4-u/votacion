@@ -11,6 +11,7 @@ import HistorialModal from "./modals/HistorialModal";
 import CandidatosModal from "./modals/CandidatosModal";
 import ResultadosModal from "./modals/ResultadosModal";
 import dhondt from "dhondt";
+import Cargando from "./Cargando";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash, faHistory } from "@fortawesome/free-solid-svg-icons";
 require("dotenv").config();
@@ -45,6 +46,7 @@ function InicioAdmin() {
   const [resultados, setResultados] = useState([]);
   const [showResultados, setShowResultados] = useState(false);
   const [nombresDeListas, setNombresDeListas] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const handleCloseHistorial = () => setShowHistorial(false);
   const handleShowHistorial = () => setShowHistorial(true);
@@ -67,26 +69,34 @@ function InicioAdmin() {
   }, [factory]);
 
   async function loadBlockchainData() {
-    const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
-    const networkData = votacionFactory.networks[networkId];
-
-    if (networkData) {
-      const abi = votacionFactory.abi;
-      const address = networkData.address;
-      const factory = new ethers.Contract(address, abi, wallet);
-      setFactory(factory);
-      console.log(
-        "El contrato está funcionando bien. Address: ",
-        address,
-        " Abi: ",
-        abi,
-        " Wallet: ",
-        wallet
-      );
-    } else {
-      window.alert("¡El Smart Contract no se ha desplegado en la red!");
+    try {
+      setLoading(true);
+      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
+      const networkData = votacionFactory.networks[networkId];
+  
+      if (networkData) {
+        const abi = votacionFactory.abi;
+        const address = networkData.address;
+        const factory = new ethers.Contract(address, abi, wallet);
+        setFactory(factory);
+        console.log(
+          "El contrato está funcionando bien. Address: ",
+          address,
+          " Abi: ",
+          abi,
+          " Wallet: ",
+          wallet
+        );
+      } else {
+        window.alert("¡El Smart Contract no se ha desplegado en la red!");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
+  
 
   /////////////////////////////////////////////////////
   //Creación, Eliminación y Terminación de Votaciones//
@@ -103,6 +113,7 @@ function InicioAdmin() {
       return;
     }
     try {
+      setLoading(true);
       let tx = await factory.crearVotacionDhondt(
         nombre,
         listas,
@@ -118,6 +129,8 @@ function InicioAdmin() {
       loadVotaciones(); // Actualiza las votaciones después de crear una nueva
     } catch (error) {
       console.error("Error creating votacion: ", error);
+    } finally {
+      setLoading(false);
     }
     setCrearVotacionPassword("");
   }
@@ -128,11 +141,14 @@ function InicioAdmin() {
       return;
     }
     try {
+      setLoading(true);
       let tx = await factory.crearVotacion(nombre, candidatos, descripcion);
       await tx.wait();
       loadVotaciones(); // Actualiza las votaciones después de crear una nueva
     } catch (error) {
       console.error("Error creating votacion: ", error);
+    } finally {
+      setLoading(false);
     }
     console.log(descripcion);
     setCrearVotacionPassword("");
@@ -144,11 +160,14 @@ function InicioAdmin() {
       return;
     }
     try {
+      setLoading(true);
       let tx = await factory.eliminarVotacion(indice);
       await tx.wait();
       loadVotaciones(); // Actualiza las votaciones después de eliminar una
     } catch (error) {
       console.error("Error eliminando votacion: ", error);
+    } finally {
+      setLoading(false);
     }
     setEliminarVotacionPassword("");
   }
@@ -159,6 +178,7 @@ function InicioAdmin() {
       return;
     }
     try {
+      setLoading(true);
       let tx = await factory.terminarVotacion(indice);
       await tx.wait();
       loadVotaciones(); // Actualiza las votaciones después de terminar una
@@ -169,6 +189,8 @@ function InicioAdmin() {
       );
     } catch (error) {
       console.error("Error terminando votacion: ", error);
+    } finally {
+      setLoading(false);
     }
     setTerminarVotacionPassword("");
   }
@@ -180,6 +202,7 @@ function InicioAdmin() {
   async function loadVotaciones() {
     console.log("contrasenia: ", adminPassword);
     try {
+      setLoading(true);
       console.log("Cargando votaciones...");
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndice();
@@ -217,11 +240,14 @@ function InicioAdmin() {
       console.log("Votaciones cargadas.");
     } catch (error) {
       console.error("Error loading votaciones: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function loadVotacionesTerminadas() {
     try {
+      setLoading(true);
       console.log("Cargando votaciones terminadas...");
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndiceTerminadas();
@@ -250,6 +276,8 @@ function InicioAdmin() {
       console.log("Votaciones terminadas cargadas.");
     } catch (error) {
       console.error("Error loading votaciones terminadas: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -257,58 +285,83 @@ function InicioAdmin() {
   // Obtención de Detalles//
   //////////////////////////
   async function verDetalles(indice) {
-    const votacionContract = new ethers.Contract(
-      votaciones[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const metodoConteo = await votacionContract.obtenerMetodoConteo();
-    console.log(metodoConteo);
-
-    if (metodoConteo === "mayoria-absoluta") {
-      console.log(indice);
-      verCandidatos(indice);
-    } else if (metodoConteo === "dhondt") {
-      console.log(indice);
-      obtenerResultadosDhondt(indice);
+    try {
+      setLoading(true);
+      const votacionContract = new ethers.Contract(
+        votaciones[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const metodoConteo = await votacionContract.obtenerMetodoConteo();
+      console.log(metodoConteo);
+  
+      if (metodoConteo === "mayoria-absoluta") {
+        console.log(indice);
+        verCandidatos(indice);
+      } else if (metodoConteo === "dhondt") {
+        console.log(indice);
+        obtenerResultadosDhondt(indice);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
+  
 
   async function verDetallesTerminadas(indice) {
-    const votacionContract = new ethers.Contract(
-      votacionesTerminadas[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const metodoConteo = await votacionContract.obtenerMetodoConteo();
-    console.log(metodoConteo);
-
-    if (metodoConteo === "mayoria-absoluta") {
-      verResultados(indice);
-    } else if (metodoConteo === "dhondt") {
-      obtenerResultadosDhondtTerminada(indice);
+    try {
+      setLoading(true);
+      const votacionContract = new ethers.Contract(
+        votacionesTerminadas[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const metodoConteo = await votacionContract.obtenerMetodoConteo();
+      console.log(metodoConteo);
+  
+      if (metodoConteo === "mayoria-absoluta") {
+        verResultados(indice);
+      } else if (metodoConteo === "dhondt") {
+        obtenerResultadosDhondtTerminada(indice);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
+  
 
   async function verCandidatos(indice) {
-    const votacionContract = new ethers.Contract(
-      votaciones[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const numCandidatos = await votacionContract.obtenerNumCandidatos();
-    const candidatosYVotos = [];
-    for (let i = 0; i < numCandidatos; i++) {
-      const candidato = await votacionContract.candidatos(i);
-      const votos = (await votacionContract.obtenerVotos(i)).toNumber();
-      candidatosYVotos.push({ candidato, votos });
+    try {
+      setLoading(true);
+      const votacionContract = new ethers.Contract(
+        votaciones[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const numCandidatos = await votacionContract.obtenerNumCandidatos();
+      const candidatosYVotos = [];
+      for (let i = 0; i < numCandidatos; i++) {
+        const candidato = await votacionContract.candidatos(i);
+        const votos = (await votacionContract.obtenerVotos(i)).toNumber();
+        candidatosYVotos.push({ candidato, votos });
+      }
+      setCandidatosInfo(candidatosYVotos);
+      handleShowCandidatos();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-    setCandidatosInfo(candidatosYVotos);
-    handleShowCandidatos();
   }
+  
 
   async function obtenerResultadosDhondtTerminada(indice) {
     try {
+      setLoading(true);
       console.log("Iniciando obtenerResultadosDhondt...");
 
       const votacionContract = new ethers.Contract(
@@ -378,11 +431,14 @@ function InicioAdmin() {
       handleClose();
     } catch (error) {
       console.error("Error en obtenerResultadosDhondt:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function obtenerResultadosDhondt(indice) {
     try {
+      setLoading(true);
       const votacionContract = new ethers.Contract(
         votaciones[indice].direccion,
         votacionDHondt.abi,
@@ -411,26 +467,36 @@ function InicioAdmin() {
       handleClose();
     } catch (error) {
       console.error("Error al obtener los resultados: ", error);
+    } finally {
+      setLoading(false);
     }
   }
   
+  async function verResultados(indice) {
+    try {
+      setLoading(true);
+      const votacionContract = new ethers.Contract(
+        votacionesTerminadas[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const numCandidatos = await votacionContract.obtenerNumCandidatos();
+      const candidatosYVotos = [];
+      for (let i = 0; i < numCandidatos; i++) {
+        const candidato = await votacionContract.candidatos(i);
+        const votos = (await votacionContract.obtenerVotos(i)).toNumber();
+        candidatosYVotos.push({ candidato, votos });
+      }
+      alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
   
 
-  async function verResultados(indice) {
-    const votacionContract = new ethers.Contract(
-      votacionesTerminadas[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const numCandidatos = await votacionContract.obtenerNumCandidatos();
-    const candidatosYVotos = [];
-    for (let i = 0; i < numCandidatos; i++) {
-      const candidato = await votacionContract.candidatos(i);
-      const votos = (await votacionContract.obtenerVotos(i)).toNumber();
-      candidatosYVotos.push({ candidato, votos });
-    }
-    alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
-  }
+  
   /////////////////////
   //Manejo de Botones//
   ////////////////////
@@ -439,10 +505,13 @@ function InicioAdmin() {
     event.preventDefault();
     if (votacionAEliminar !== "") {
       try {
+      setLoading(true);
         await eliminarVotacion(votacionAEliminar);
         handleCloseEliminar();
       } catch (error) {
         console.error("Error submitting form: ", error);
+      } finally {
+        setLoading(false);
       }
     } else {
       console.error("No se seleccionó ninguna votación para eliminar.");
@@ -543,7 +612,7 @@ function InicioAdmin() {
           <FontAwesomeIcon icon={faHistory} /> Historial de Votaciones
         </Button>
       </div>
-
+      {loading && <Cargando />}
       <TablaVotacionesAdmin
         votaciones={votaciones}
         terminarVotacionPassword={terminarVotacionPassword}

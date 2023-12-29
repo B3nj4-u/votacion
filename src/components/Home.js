@@ -6,6 +6,7 @@ import { Form, Button, Modal } from "react-bootstrap";
 import CrearCuentaModal from "./modals/CrearCuentaModal";
 import LoginForm from "./forms/LoginForm";
 import AdminLoginModal from "./modals/AdminLoginModal";
+import Cargando from "./Cargando";
 
 import Navigation from "./Navbar";
 import MyCarousel from "./Carousel";
@@ -34,7 +35,7 @@ const wallet = new ethers.Wallet(privateKey, provider);
 
 function Home() {
   const [account, setAccount] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [nombre, setNombre] = useState("");
   const [rut, setRut] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
@@ -67,60 +68,74 @@ function Home() {
   }
 
   async function loadBlockchainData() {
-    const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
-    const networkData = cuentaFactory.networks[networkId];
+    try {
+      setLoading(true);
+      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
+      const networkData = cuentaFactory.networks[networkId];
 
-    if (networkData) {
-      const abi = cuentaFactory.abi;
-      const address = networkData.address;
-      const contract = new ethers.Contract(address, abi, wallet);
-      setContract(contract);
-      console.log(
-        "El contrato está funcionando bien. Address: ",
-        address,
-        " Abi: ",
-        abi,
-        " Wallet: ",
-        wallet
-      );
-    } else {
-      window.alert("¡El Smart Contract no se ha desplegado en la red!");
+      if (networkData) {
+        const abi = cuentaFactory.abi;
+        const address = networkData.address;
+        const contract = new ethers.Contract(address, abi, wallet);
+        setContract(contract);
+        console.log(
+          "El contrato está funcionando bien. Address: ",
+          address,
+          " Abi: ",
+          abi,
+          " Wallet: ",
+          wallet
+        );
+      } else {
+        window.alert("¡El Smart Contract no se ha desplegado en la red!");
+      }
+    } catch (error) {
+      console.error("Error al cargar los datos de la blockchain: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function crearNuevaCuenta(texto, contrasena) {
-    // Llama a la función crearCuenta en el contrato
-    let tx = await contract.crearCuenta(texto, contrasena);
+    try {
+      setLoading(true);
+      // Llama a la función crearCuenta en el contrato
+      let tx = await contract.crearCuenta(texto, contrasena);
 
-    // Espera a que la transacción sea minada
-    await tx.wait();
+      // Espera a que la transacción sea minada
+      await tx.wait();
 
-    // Obtiene el índice del último contrato creado
-    let ultimoIndice = await contract.ultimoIndice();
+      // Obtiene el índice del último contrato creado
+      let ultimoIndice = await contract.ultimoIndice();
 
-    // Resta uno al índice para obtener el índice del contrato que acabamos de crear
-    ultimoIndice = ultimoIndice - 1;
+      // Resta uno al índice para obtener el índice del contrato que acabamos de crear
+      ultimoIndice = ultimoIndice - 1;
 
-    // Obtiene la dirección del nuevo contrato Cuenta
-    let nuevaCuentaDireccion = await contract.obtenerCuenta(ultimoIndice);
+      // Obtiene la dirección del nuevo contrato Cuenta
+      let nuevaCuentaDireccion = await contract.obtenerCuenta(ultimoIndice);
 
-    // Crea una nueva instancia del contrato Cuenta
-    let nuevaCuenta = new ethers.Contract(
-      nuevaCuentaDireccion,
-      cuenta.abi,
-      wallet
-    );
+      // Crea una nueva instancia del contrato Cuenta
+      let nuevaCuenta = new ethers.Contract(
+        nuevaCuentaDireccion,
+        cuenta.abi,
+        wallet
+      );
 
-    // Ahora puedes llamar a las funciones del contrato Cuenta
-    let direccion = await nuevaCuenta.obtenerDireccion();
+      // Ahora puedes llamar a las funciones del contrato Cuenta
+      let direccion = await nuevaCuenta.obtenerDireccion();
 
-    console.log(
-      "El valor _direccion del nuevo contrato Cuenta es: ",
-      direccion
-    );
+      console.log(
+        "El valor _direccion del nuevo contrato Cuenta es: ",
+        direccion
+      );
 
-    // Devuelve el valor _direccion y la dirección del nuevo contrato Cuenta
-    return { direccion, nuevaCuentaDireccion };
+      // Devuelve el valor _direccion y la dirección del nuevo contrato Cuenta
+      return { direccion, nuevaCuentaDireccion };
+    } catch (error) {
+      console.error("Error al crear una nueva cuenta: ", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleSubmit(event) {
@@ -133,6 +148,7 @@ function Home() {
 
     // Llama a la función crearCuenta del contrato
     try {
+      setLoading(true);
       // Aquí es donde llamamos a la función para crear una nueva cuenta
       let { direccion, nuevaCuentaDireccion } = await crearNuevaCuenta(
         texto,
@@ -146,12 +162,15 @@ function Home() {
     } catch (error) {
       // Muestra un mensaje de error al usuario
       alert(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleLogin(event) {
     event.preventDefault();
     try {
+      setLoading(true);
       // Aquí es donde instancias el contrato CuentaFactory y llamas a la función para obtener la dirección del contrato
       const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = cuentaFactory.networks[networkId];
@@ -191,12 +210,15 @@ function Home() {
       }
     } catch (error) {
       console.error("Error al iniciar sesión: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div>
       <Navigation account={account} />
+      {loading && <Cargando />}
       <MyCarousel />
       <div className="container-fluid mt-5">
         <div className="row">

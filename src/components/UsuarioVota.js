@@ -6,6 +6,7 @@ import votacionDHondt from "../abis/VotacionDHondt.json";
 import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
 import UsuarioVotaForm from "./forms/UsuarioVotaForm";
+import Cargando from "./Cargando";
 
 const { ethers } = require("ethers");
 
@@ -40,10 +41,12 @@ function UsuarioVota() {
   });
   const [metodoConteo, setMetodoConteo] = useState("");
   const [votacionContract, setVotacionContract] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function loadCandidatos() {
       try {
+        setLoading(true);
         let contractInstance;
         let votacionContract = new ethers.Contract(
           votacionAddress,
@@ -88,6 +91,8 @@ function UsuarioVota() {
         setVotacionContract(contractInstance);
       } catch (error) {
         console.error("Error loading candidatos: ", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -96,6 +101,7 @@ function UsuarioVota() {
 
   async function votar() {
     try {
+      setLoading(true);
       const cuentaContract = new ethers.Contract(
         contractAddress,
         cuenta.abi,
@@ -138,12 +144,15 @@ function UsuarioVota() {
       console.error("Error voting: ", error);
       alert("Ya has votado en esta votación.");
       navigate("/Inicio", { state: { account, contractAddress } });
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div>
       <Navigation account={account} />
+      {loading && <Cargando />}
       <Container>
         <Row className="justify-content-md-center">
           <Col md="auto">

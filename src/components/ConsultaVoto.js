@@ -4,7 +4,7 @@ import cuenta from "../abis/Cuenta.json";
 import Navigation from "./Navbar";
 import ConsultaVotoForm from './forms/ConsultaVotoForm';
 import VotosModal from './modals/VotosModal';
-
+import Cargando from "./Cargando";
 const { ethers } = require("ethers");
 require("dotenv").config();
 const privateKey = process.env.REACT_APP_PRIVATE_KEY;
@@ -24,10 +24,12 @@ function ConsultaVoto() {
   const [direccionUsuario, setDireccionUsuario] = useState("");
   const [votos, setVotos] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   async function handleConsulta(event) {
     event.preventDefault();
     try {
+      setLoading(true);
       // Aquí es donde instancias el contrato CuentaFactory y llamas a la función para obtener la dirección del contrato
       const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = cuentaFactory.networks[networkId];
@@ -54,13 +56,15 @@ function ConsultaVoto() {
       }
     } catch (error) {
       console.error("Error al consultar los votos: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div>
       <Navigation account={"No hay sesión"} />
-
+      {loading && <Cargando />}
       <div className="container-fluid mt-5">
         <div className="row">
           <main role="main" className="col-lg-12 d-flex text-center">
