@@ -13,6 +13,7 @@ import dhondt from "dhondt";
 import CandidatosModalUser from "./modals/CandidatosModalUser";
 import HistorialModalUser from "./modals/HistorialModalUser";
 import TablaVotacionesUser from "./tables/TablaVotacionesUser";
+import Cargando from "./Cargando";
 
 const { ethers } = require("ethers");
 require("dotenv").config();
@@ -42,6 +43,8 @@ function InicioLogged() {
   const [showCandidatos, setShowCandidatos] = useState(false);
   const [candidatosInfo, setCandidatosInfo] = useState([]);
   const [showHistorial, setShowHistorial] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const handleCloseCandidatos = () => setShowCandidatos(false);
   const handleShowCandidatos = () => setShowCandidatos(true);
   const handleCloseHistorial = () => setShowHistorial(false);
@@ -62,6 +65,7 @@ function InicioLogged() {
 
   async function loadBlockchainData() {
     try {
+      setLoading(true);
       const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = votacionFactory.networks[networkId];
 
@@ -75,11 +79,14 @@ function InicioLogged() {
       }
     } catch (error) {
       console.error("Error loading blockchain data: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function loadVotaciones() {
     try {
+      setLoading(true);
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndice();
       for (let i = 0; i < ultimoIndice; i++) {
@@ -103,11 +110,14 @@ function InicioLogged() {
       setVotaciones(votaciones);
     } catch (error) {
       console.error("Error loading votaciones: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function loadVotacionesTerminadas() {
     try {
+      setLoading(true);
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndiceTerminadas();
 
@@ -129,11 +139,14 @@ function InicioLogged() {
       setVotacionesTerminadas(votaciones);
     } catch (error) {
       console.error("Error loading votaciones terminadas: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function verCandidatos(indice) {
     try {
+      setLoading(true);
       const votacionContract = new ethers.Contract(
         votaciones[indice].direccion,
         votacion.abi,
@@ -150,11 +163,14 @@ function InicioLogged() {
       handleShowCandidatos();
     } catch (error) {
       console.error("Error viewing candidates: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function irAVotar(indice) {
     try {
+      setLoading(true);
       const votacionDireccion = votaciones[indice].direccion;
       const cuentaContract = new ethers.Contract(
         contractAddress,
@@ -175,27 +191,37 @@ function InicioLogged() {
       }
     } catch (error) {
       console.error("Error going to vote: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function verDetallesTerminadas(indice) {
-    const votacionContract = new ethers.Contract(
-      votacionesTerminadas[indice].direccion,
-      votacion.abi,
-      wallet
-    );
-    const metodoConteo = await votacionContract.obtenerMetodoConteo();
-    console.log(metodoConteo);
+    try {
+      setLoading(true);
+      const votacionContract = new ethers.Contract(
+        votacionesTerminadas[indice].direccion,
+        votacion.abi,
+        wallet
+      );
+      const metodoConteo = await votacionContract.obtenerMetodoConteo();
+      console.log(metodoConteo);
 
-    if (metodoConteo === "mayoria-absoluta") {
-      verResultados(indice);
-    } else if (metodoConteo === "dhondt") {
-      obtenerResultadosDhondtTerminada(indice);
+      if (metodoConteo === "mayoria-absoluta") {
+        verResultados(indice);
+      } else if (metodoConteo === "dhondt") {
+        obtenerResultadosDhondtTerminada(indice);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function verResultados(indice) {
     try {
+      setLoading(true);
       const votacionContract = new ethers.Contract(
         votacionesTerminadas[indice].direccion,
         votacion.abi,
@@ -211,50 +237,58 @@ function InicioLogged() {
       alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
     } catch (error) {
       console.error("Error viewing results: ", error);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function obtenerResultadosDhondtTerminada(indice) {
     try {
+      setLoading(true);
       console.log("Iniciando obtenerResultadosDhondt...");
-  
+
       const votacionContract = new ethers.Contract(
         votacionesTerminadas[indice].direccion,
         votacionDHondt.abi,
         wallet
       );
-  
+
       console.log("Contrato obtenido:", votacionContract);
-  
+
       // Obtén todos los votos individuales de cada candidato en cada lista
-      const votosDhondtBigNumber = await votacionContract.obtenerTodosLosVotos();
+      const votosDhondtBigNumber =
+        await votacionContract.obtenerTodosLosVotos();
       const votosPorCandidato = votosDhondtBigNumber.map((lista) =>
         lista.map((voto) => voto.toNumber())
       );
-  
+
       // Suma los votos de cada candidato en una lista para obtener el total de votos de cada lista
       const votosPorLista = votosPorCandidato.map((votosLista) =>
         votosLista.reduce((a, b) => a + b, 0)
       );
-  
+
       console.log("Votos por lista:", votosPorLista);
-  
+
       // Obtener los escaños
       const escanios = await votacionContract.obtenerEscanios();
       console.log("Escanios:", escanios);
-  
+
       // Calcula los escaños usando la biblioteca dhondt
       const asignacion = dhondt.compute(votosPorLista, escanios);
       console.log("Asignación:", asignacion);
-  
-      let mensaje = '';
+
+      let mensaje = "";
       for (let i = 0; i < asignacion.length; i++) {
         if (asignacion[i] > 0) {
           const nombreLista = await votacionContract.obtenerNombreLista(i);
-          const numCandidatos = await votacionContract.obtenerNumCandidatosLista(i);
+          const numCandidatos =
+            await votacionContract.obtenerNumCandidatosLista(i);
           let candidatos = [];
           for (let j = 0; j < numCandidatos; j++) {
-            const candidato = await votacionContract.obtenerCandidatoLista(i, j);
+            const candidato = await votacionContract.obtenerCandidatoLista(
+              i,
+              j
+            );
             const votosCandidato = votosPorCandidato[i][j];
             candidatos.push({ nombre: candidato, votos: votosCandidato });
           }
@@ -267,11 +301,13 @@ function InicioLogged() {
           }
         }
       }
-  
+
       console.log("Mensaje final:", mensaje);
       alert(mensaje);
     } catch (error) {
       console.error("Error en obtenerResultadosDhondt:", error);
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -282,6 +318,7 @@ function InicioLogged() {
       <Button variant="info" onClick={handleShowHistorial}>
         <FontAwesomeIcon icon={faHistory} /> Historial de Votaciones
       </Button>
+      {loading && <Cargando />}
       <TablaVotacionesUser
         votaciones={votaciones}
         verCandidatos={verCandidatos}
@@ -292,7 +329,6 @@ function InicioLogged() {
         handleClose={handleCloseCandidatos}
         candidatosInfo={candidatosInfo}
       />
-
       <HistorialModalUser
         show={showHistorial}
         handleClose={handleCloseHistorial}
