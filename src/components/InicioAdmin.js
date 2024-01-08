@@ -16,12 +16,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash, faHistory } from "@fortawesome/free-solid-svg-icons";
 require("dotenv").config();
 const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
+const privateKey = process.env.REACT_APP_PRIVATE_KEY;
+const providerUrl = process.env.REACT_APP_PROVIDER_URL;
+const networkId = process.env.REACT_APP_NETWORK_ID;
+// Validación de variables de entorno
+if (!adminPassword) {
+  window.alert("Falta adminPassword. Verifica tu archivo .env.");
+  process.exit(1);
+}
+if (!providerUrl) {
+  window.alert("Falta providerUrl. Verifica tu archivo .env.");
+  process.exit(1);
+}
+if (!privateKey) {
+  window.alert("Falta privateKey. Verifica tu archivo .env.");
+  process.exit(1);
+}
 
+// Creacion de la billetera
 const { ethers } = require("ethers");
-
-const provider = new ethers.providers.JsonRpcProvider(`http://127.0.0.1:7545`);
-const privateKey =
-  "0xec362c8b60288f86de32edff2a845407480eb611d71d0848543ff97847097275";
+const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 const wallet = new ethers.Wallet(privateKey, provider);
 
 function InicioAdmin() {
@@ -71,27 +85,17 @@ function InicioAdmin() {
   async function loadBlockchainData() {
     try {
       setLoading(true);
-      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = votacionFactory.networks[networkId];
-  
       if (networkData) {
         const abi = votacionFactory.abi;
         const address = networkData.address;
         const factory = new ethers.Contract(address, abi, wallet);
         setFactory(factory);
-        console.log(
-          "El contrato está funcionando bien. Address: ",
-          address,
-          " Abi: ",
-          abi,
-          " Wallet: ",
-          wallet
-        );
       } else {
         window.alert("¡El Smart Contract no se ha desplegado en la red!");
       }
     } catch (error) {
-      console.error(error);
+      window.alert(error);
     } finally {
       setLoading(false);
     }
@@ -128,7 +132,7 @@ function InicioAdmin() {
       console.log("Dirección de la votación creada: ", votacionAddress);
       loadVotaciones(); // Actualiza las votaciones después de crear una nueva
     } catch (error) {
-      console.error("Error creating votacion: ", error);
+      window.alert("Error creating votacion: ", error);
     } finally {
       setLoading(false);
     }
@@ -146,11 +150,10 @@ function InicioAdmin() {
       await tx.wait();
       loadVotaciones(); // Actualiza las votaciones después de crear una nueva
     } catch (error) {
-      console.error("Error creating votacion: ", error);
+      window.alert("Error creating votacion: ", error);
     } finally {
       setLoading(false);
     }
-    console.log(descripcion);
     setCrearVotacionPassword("");
   }
 
@@ -165,7 +168,7 @@ function InicioAdmin() {
       await tx.wait();
       loadVotaciones(); // Actualiza las votaciones después de eliminar una
     } catch (error) {
-      console.error("Error eliminando votacion: ", error);
+      window.alert("Error eliminando votacion: ", error);
     } finally {
       setLoading(false);
     }
@@ -188,7 +191,7 @@ function InicioAdmin() {
           JSON.stringify(candidatosInfo)
       );
     } catch (error) {
-      console.error("Error terminando votacion: ", error);
+      window.alert("Error terminando votacion: ", error);
     } finally {
       setLoading(false);
     }
@@ -200,16 +203,12 @@ function InicioAdmin() {
   ///////////////////////////////
 
   async function loadVotaciones() {
-    console.log("contrasenia: ", adminPassword);
     try {
       setLoading(true);
-      console.log("Cargando votaciones...");
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndice();
-      console.log(`Hay ${ultimoIndice} votaciones en total.`);
 
       for (let i = 0; i < ultimoIndice; i++) {
-        console.log(`Cargando votacion ${i}...`);
         const direccion = await factory.obtenerVotacion(i);
         if (direccion) {
           const votacionContract = new ethers.Contract(
@@ -222,12 +221,8 @@ function InicioAdmin() {
           const descripcion = await votacionContract.obtenerDescripcion(); // Obtén la descripción aquí
           const terminada = await votacionContract.obtenerTerminada();
 
-          console.log(
-            `Votacion ${i}: nombre=${nombre}, estado=${estado}, terminada=${terminada}, descripcion=${descripcion}`
-          );
 
           if (estado && !terminada) {
-            console.log(`La votacion ${i} está en curso.`);
             votaciones.push({ nombre, direccion, descripcion }); // Incluye la descripción aquí
           }
         }
@@ -237,9 +232,8 @@ function InicioAdmin() {
       if (votaciones.length > 0) {
         setVotacionAEliminar("0"); // Inicializa votacionAEliminar con el índice de la primera votación
       }
-      console.log("Votaciones cargadas.");
     } catch (error) {
-      console.error("Error loading votaciones: ", error);
+      window.alert("Error loading votaciones: ", error);
     } finally {
       setLoading(false);
     }
@@ -248,13 +242,10 @@ function InicioAdmin() {
   async function loadVotacionesTerminadas() {
     try {
       setLoading(true);
-      console.log("Cargando votaciones terminadas...");
       const votaciones = [];
       const ultimoIndice = await factory.ultimoIndiceTerminadas();
-      console.log(`Hay ${ultimoIndice} votaciones terminadas en total.`);
 
       for (let i = 0; i < ultimoIndice; i++) {
-        console.log(`Cargando votacion terminada ${i}...`);
         const direccion = await factory.obtenerVotacionTerminada(i);
         if (direccion) {
           const votacionContract = new ethers.Contract(
@@ -264,18 +255,14 @@ function InicioAdmin() {
           );
           const nombre = await votacionContract.nombre();
           const descripcion = await votacionContract.obtenerDescripcion(); // Obtén la descripción aquí
-          console.log(
-            `Votacion terminada ${i}: nombre=${nombre}, descripcion=${descripcion}`
-          );
 
           votaciones.push({ nombre, direccion, descripcion }); // Incluye la descripción aquí
         }
       }
 
       setVotacionesTerminadas(votaciones);
-      console.log("Votaciones terminadas cargadas.");
     } catch (error) {
-      console.error("Error loading votaciones terminadas: ", error);
+      window.alert("Error loading votaciones terminadas: ", error);
     } finally {
       setLoading(false);
     }
@@ -293,17 +280,14 @@ function InicioAdmin() {
         wallet
       );
       const metodoConteo = await votacionContract.obtenerMetodoConteo();
-      console.log(metodoConteo);
   
       if (metodoConteo === "mayoria-absoluta") {
-        console.log(indice);
         verCandidatos(indice);
       } else if (metodoConteo === "dhondt") {
-        console.log(indice);
         obtenerResultadosDhondt(indice);
       }
     } catch (error) {
-      console.error(error);
+      window.alert(error);
     } finally {
       setLoading(false);
     }
@@ -319,7 +303,6 @@ function InicioAdmin() {
         wallet
       );
       const metodoConteo = await votacionContract.obtenerMetodoConteo();
-      console.log(metodoConteo);
   
       if (metodoConteo === "mayoria-absoluta") {
         verResultados(indice);
@@ -327,7 +310,7 @@ function InicioAdmin() {
         obtenerResultadosDhondtTerminada(indice);
       }
     } catch (error) {
-      console.error(error);
+      window.alert(error);
     } finally {
       setLoading(false);
     }
@@ -352,7 +335,7 @@ function InicioAdmin() {
       setCandidatosInfo(candidatosYVotos);
       handleShowCandidatos();
     } catch (error) {
-      console.error(error);
+      window.alert(error);
     } finally {
       setLoading(false);
     }
@@ -362,7 +345,6 @@ function InicioAdmin() {
   async function obtenerResultadosDhondtTerminada(indice) {
     try {
       setLoading(true);
-      console.log("Iniciando obtenerResultadosDhondt...");
 
       const votacionContract = new ethers.Contract(
         votacionesTerminadas[indice].direccion,
@@ -370,7 +352,6 @@ function InicioAdmin() {
         wallet
       );
 
-      console.log("Contrato obtenido:", votacionContract);
 
       // Obtén todos los votos individuales de cada candidato en cada lista
       const votosDhondtBigNumber =
@@ -384,15 +365,12 @@ function InicioAdmin() {
         votosLista.reduce((a, b) => a + b, 0)
       );
 
-      console.log("Votos por lista:", votosPorLista);
 
       // Obtener los escaños
       const escanios = await votacionContract.obtenerEscanios();
-      console.log("Escanios:", escanios);
 
       // Calcula los escaños usando la biblioteca dhondt
       const asignacion = dhondt.compute(votosPorLista, escanios);
-      console.log("Asignación:", asignacion);
 
       const resultados = [];
       for (let i = 0; i < asignacion.length; i++) {
@@ -420,17 +398,15 @@ function InicioAdmin() {
         }
       }
 
-      console.log("Resultados:", resultados);
 
       // Actualiza el estado de los resultados y muestra el modal de resultados
       setResultados(resultados);
       setShowResultados(true);
-      console.log("Estado actualizado, modal debería mostrarse");
 
       // Cierra el modal actual
       handleClose();
     } catch (error) {
-      console.error("Error en obtenerResultadosDhondt:", error);
+      window.alert("Error en obtenerResultadosDhondt:", error);
     } finally {
       setLoading(false);
     }
@@ -466,7 +442,7 @@ function InicioAdmin() {
       setShowResultados(true);
       handleClose();
     } catch (error) {
-      console.error("Error al obtener los resultados: ", error);
+      window.alert("Error al obtener los resultados: ", error);
     } finally {
       setLoading(false);
     }
@@ -489,7 +465,7 @@ function InicioAdmin() {
       }
       alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
     } catch (error) {
-      console.error(error);
+      window.alert(error);
     } finally {
       setLoading(false);
     }
@@ -509,12 +485,12 @@ function InicioAdmin() {
         await eliminarVotacion(votacionAEliminar);
         handleCloseEliminar();
       } catch (error) {
-        console.error("Error submitting form: ", error);
+        window.alert("Error submitting form: ", error);
       } finally {
         setLoading(false);
       }
     } else {
-      console.error("No se seleccionó ninguna votación para eliminar.");
+      window.alert("No se seleccionó ninguna votación para eliminar.");
     }
   }
 

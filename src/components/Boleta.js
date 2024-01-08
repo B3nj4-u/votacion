@@ -1,15 +1,22 @@
-import React, { useRef } from "react";
+import React, { useState,useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import Navigation from "./Navbar";
 import "./Boleta.css"; // Importa tu archivo CSS
 import jsPDF from "jspdf";
 
+
 function Boleta() {
   const location = useLocation();
-  const { votacion, candidato, account } = location.state;
+  const navigate = useNavigate();
+  const [votacion] = useState(location.state.votacion);
+  const [candidato] = useState(location.state.candidato);
+  const [account] = useState(location.state.account);
+  const [contractAddress] = useState(
+    location.state.contractAddress
+  );
   const direccionRef = useRef(null);
-
   function handleCopy() {
     direccionRef.current.select();
     document.execCommand("copy");
@@ -33,6 +40,12 @@ function Boleta() {
     doc.save("boleta.pdf");
   }
 
+  async function volverInicio(){
+    navigate("/inicio", {
+      state: { account, contractAddress},
+    });
+  }
+
   return (
     <div>
       <Navigation account={account} />
@@ -47,7 +60,12 @@ function Boleta() {
             <Button onClick={handleCopy}>Copiar</Button>
           </div>
         </div>
-        <Button onClick={handleDownload}>Descargar</Button>
+        <p>
+          <Button onClick={handleDownload}>Descargar</Button>
+        </p>
+        <p>
+          <Button onClick={volverInicio}>Inicio</Button>
+        </p>
       </div>
     </div>
   );

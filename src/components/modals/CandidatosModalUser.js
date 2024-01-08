@@ -1,7 +1,5 @@
 import React from "react";
-import { Modal, Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { Modal } from "react-bootstrap";
 
 function CandidatosModalUser({ show, handleClose, candidatosInfo }) {
   return (

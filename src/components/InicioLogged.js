@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Button, Modal } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faHistory, faVoteYea } from "@fortawesome/free-solid-svg-icons";
+import { faHistory } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import votacionFactory from "../abis/VotacionFactory.json";
 import votacion from "../abis/Votacion.json";
@@ -19,12 +19,13 @@ const { ethers } = require("ethers");
 require("dotenv").config();
 const privateKey = process.env.REACT_APP_PRIVATE_KEY;
 const providerUrl = process.env.REACT_APP_PROVIDER_URL;
+const networkId = process.env.REACT_APP_NETWORK_ID;
 if (!providerUrl) {
-  console.error("Falta providerUrl. Verifica tu archivo .env.");
+  window.alert("Falta providerUrl. Verifica tu archivo .env.");
   process.exit(1);
 }
 if (!privateKey) {
-  console.error("Falta privateKey. Verifica tu archivo .env.");
+  window.alert("Falta privateKey. Verifica tu archivo .env.");
   process.exit(1);
 }
 const provider = new ethers.providers.JsonRpcProvider(providerUrl);
@@ -32,8 +33,8 @@ const wallet = new ethers.Wallet(privateKey, provider);
 
 function InicioLogged() {
   const location = useLocation();
-  const [account, setAccount] = useState(location.state.account);
-  const [contractAddress, setContractAddress] = useState(
+  const [account] = useState(location.state.account);
+  const [contractAddress] = useState(
     location.state.contractAddress
   );
   console.log(contractAddress);
@@ -66,7 +67,6 @@ function InicioLogged() {
   async function loadBlockchainData() {
     try {
       setLoading(true);
-      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = votacionFactory.networks[networkId];
 
       if (networkData) {
@@ -78,7 +78,7 @@ function InicioLogged() {
         window.alert("¡El Smart Contract no se ha desplegado en la red!");
       }
     } catch (error) {
-      console.error("Error loading blockchain data: ", error);
+      window.alert("Error loading blockchain data: ", error);
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ function InicioLogged() {
       }
       setVotaciones(votaciones);
     } catch (error) {
-      console.error("Error loading votaciones: ", error);
+      window.alert("Error loading votaciones: ", error);
     } finally {
       setLoading(false);
     }
@@ -138,7 +138,7 @@ function InicioLogged() {
 
       setVotacionesTerminadas(votaciones);
     } catch (error) {
-      console.error("Error loading votaciones terminadas: ", error);
+      window.alert("Error loading votaciones terminadas: ", error);
     } finally {
       setLoading(false);
     }
@@ -162,7 +162,7 @@ function InicioLogged() {
       setCandidatosInfo(candidatosYVotos);
       handleShowCandidatos();
     } catch (error) {
-      console.error("Error viewing candidates: ", error);
+      window.alert("Error viewing candidates: ", error);
     } finally {
       setLoading(false);
     }
@@ -213,7 +213,7 @@ function InicioLogged() {
         obtenerResultadosDhondtTerminada(indice);
       }
     } catch (error) {
-      console.error(error);
+      window.alert(error);
     } finally {
       setLoading(false);
     }
@@ -236,7 +236,7 @@ function InicioLogged() {
       }
       alert("Los resultados son: " + JSON.stringify(candidatosYVotos));
     } catch (error) {
-      console.error("Error viewing results: ", error);
+      window.alert("Error viewing results: ", error);
     } finally {
       setLoading(false);
     }
@@ -305,7 +305,7 @@ function InicioLogged() {
       console.log("Mensaje final:", mensaje);
       alert(mensaje);
     } catch (error) {
-      console.error("Error en obtenerResultadosDhondt:", error);
+      window.alert("Error en obtenerResultadosDhondt:", error);
     } finally {
       setLoading(false);
     }

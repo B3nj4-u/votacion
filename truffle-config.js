@@ -18,10 +18,10 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
+const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-// const fs = require('fs');
-//const mnemonic = fs.readFileSync(".secret").toString().trim();
+require("dotenv").config();
+const mnemonic = process.env.REACT_APP_PRIVATE_KEY;
 
 module.exports = {
   /**
@@ -45,6 +45,29 @@ module.exports = {
       port: 7545,            // Standard Ethereum port (default: none)
       network_id: "*",       // Any network (default: none)
     },   
+    //Testnet Binance Smart Chain (BSC)
+    testnet: {
+      provider: () => new HDWalletProvider(mnemonic, `https://data-seed-prebsc-1-s1.bnbchain.org:8545`),
+      network_id: 97,
+      confirmations: 1,
+      timeoutBlocks: 200,
+      gasPrice: 10000000000, // 10 Gwei
+      skipDryRun: true
+    },
+    bsc: {
+      provider: () => new HDWalletProvider(mnemonic, `https://bsc-dataseed1.bnbchain.org`),
+      network_id: 56,
+      confirmations: 10,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
+    polygon: {
+      provider: () => new HDWalletProvider(mnemonic, `https://polygon-mumbai.infura.io/v3/873e56d7a09f4f9185c3ef5fdce04bcf`),
+      network_id: 80001,
+      confirmations: 1,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    }
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port

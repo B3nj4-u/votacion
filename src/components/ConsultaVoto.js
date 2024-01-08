@@ -9,12 +9,14 @@ const { ethers } = require("ethers");
 require("dotenv").config();
 const privateKey = process.env.REACT_APP_PRIVATE_KEY;
 const providerUrl = process.env.REACT_APP_PROVIDER_URL;
+const networkId = process.env.REACT_APP_NETWORK_ID;
+
 if (!providerUrl) {
-  console.error("Falta providerUrl. Verifica tu archivo .env.");
+  window.alert("Falta providerUrl. Verifica tu archivo .env.");
   process.exit(1);
 }
 if (!privateKey) {
-  console.error("Falta privateKey. Verifica tu archivo .env.");
+  window.alert("Falta privateKey. Verifica tu archivo .env.");
   process.exit(1);
 }
 const provider = new ethers.providers.JsonRpcProvider(providerUrl);
@@ -30,8 +32,6 @@ function ConsultaVoto() {
     event.preventDefault();
     try {
       setLoading(true);
-      // Aquí es donde instancias el contrato CuentaFactory y llamas a la función para obtener la dirección del contrato
-      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = cuentaFactory.networks[networkId];
 
       if (networkData) {
@@ -55,7 +55,7 @@ function ConsultaVoto() {
         window.alert("¡El Smart Contract no se ha desplegado en la red!");
       }
     } catch (error) {
-      console.error("Error al consultar los votos: ", error);
+      window.alert("Error al consultar los votos: ", error);
     } finally {
       setLoading(false);
     }

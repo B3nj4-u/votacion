@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Container, Form, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import votacion from "../abis/Votacion.json";
 import votacionDHondt from "../abis/VotacionDHondt.json";
 import cuenta from "../abis/Cuenta.json";
@@ -14,11 +14,11 @@ require("dotenv").config();
 const privateKey = process.env.REACT_APP_PRIVATE_KEY;
 const providerUrl = process.env.REACT_APP_PROVIDER_URL;
 if (!providerUrl) {
-  console.error("Falta providerUrl. Verifica tu archivo .env.");
+  window.alert("Falta providerUrl. Verifica tu archivo .env.");
   process.exit(1);
 }
 if (!privateKey) {
-  console.error("Falta privateKey. Verifica tu archivo .env.");
+  window.alert("Falta privateKey. Verifica tu archivo .env.");
   process.exit(1);
 }
 const provider = new ethers.providers.JsonRpcProvider(providerUrl);
@@ -27,13 +27,9 @@ const wallet = new ethers.Wallet(privateKey, provider);
 function UsuarioVota() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [account, setAccount] = useState(location.state.account);
-  const [contractAddress, setContractAddress] = useState(
-    location.state.contractAddress
-  );
-  const [votacionAddress, setVotacionAddress] = useState(
-    location.state.votacionAddress
-  );
+  const [account] = useState(location.state.account);
+  const [contractAddress] = useState(location.state.contractAddress);
+  const [votacionAddress] = useState(location.state.votacionAddress);
   const [candidatos, setCandidatos] = useState([]);
   const [selectedCandidato, setSelectedCandidato] = useState({
     lista: null,
@@ -90,7 +86,7 @@ function UsuarioVota() {
         }
         setVotacionContract(contractInstance);
       } catch (error) {
-        console.error("Error loading candidatos: ", error);
+        window.alert("Error loading candidatos: ", error);
       } finally {
         setLoading(false);
       }
@@ -107,42 +103,47 @@ function UsuarioVota() {
         cuenta.abi,
         wallet
       );
+      const haVotado = await cuentaContract.comprobarVoto(votacionAddress);
+      if (haVotado) {
+        window.alert("Ya has votado en esta votación.");
+        navigate("/Inicio", { state: { account, contractAddress } });
+      } else {
+        const nombreVotacion = await votacionContract.obtenerNombre();
+        let nombreCandidato;
+        let candidatoIndex;
+        let listaIndex;
 
-      const nombreVotacion = await votacionContract.obtenerNombre();
-      let nombreCandidato;
-      let candidatoIndex;
-      let listaIndex;
+        if (metodoConteo === "mayoria-absoluta") {
+          nombreCandidato = candidatos[selectedCandidato];
+          candidatoIndex = selectedCandidato;
+          await votacionContract.votar(candidatoIndex);
+        } else if (metodoConteo === "dhondt") {
+          nombreCandidato =
+            candidatos[selectedCandidato.lista][selectedCandidato.candidato];
+          candidatoIndex = selectedCandidato.candidato;
+          listaIndex = selectedCandidato.lista;
+          await votacionContract.votarDhondt(listaIndex, candidatoIndex);
+        }
 
-      if (metodoConteo === "mayoria-absoluta") {
-        nombreCandidato = candidatos[selectedCandidato];
-        candidatoIndex = selectedCandidato;
-        await votacionContract.votar(candidatoIndex);
-      } else if (metodoConteo === "dhondt") {
-        nombreCandidato =
-          candidatos[selectedCandidato.lista][selectedCandidato.candidato];
-        candidatoIndex = selectedCandidato.candidato;
-        listaIndex = selectedCandidato.lista;
-        await votacionContract.votarDhondt(listaIndex, candidatoIndex);
+        await cuentaContract.votar(
+          votacionAddress,
+          candidatoIndex,
+          nombreCandidato,
+          nombreVotacion
+        );
+
+        alert("Voto registrado con éxito.");
+        navigate("/Boleta", {
+          state: {
+            account,
+            contractAddress,
+            votacion: nombreVotacion,
+            candidato: nombreCandidato,
+          },
+        });
       }
-
-      await cuentaContract.votar(
-        votacionAddress,
-        candidatoIndex,
-        nombreCandidato,
-        nombreVotacion
-      );
-
-      alert("Voto registrado con éxito.");
-      navigate("/Boleta", {
-        state: {
-          account,
-          votacion: nombreVotacion,
-          candidato: nombreCandidato,
-        },
-      });
     } catch (error) {
-      console.error("Error voting: ", error);
-      alert("Ya has votado en esta votación.");
+      window.alert("Error voting: ", error);
       navigate("/Inicio", { state: { account, contractAddress } });
     } finally {
       setLoading(false);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import cuentaFactory from "../abis/CuentaFactory.json";
 import cuenta from "../abis/Cuenta.json";
-import { Form, Button, Modal } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import CrearCuentaModal from "./modals/CrearCuentaModal";
 import LoginForm from "./forms/LoginForm";
 import AdminLoginModal from "./modals/AdminLoginModal";
@@ -14,17 +14,18 @@ require("dotenv").config();
 const adminPassword = process.env.REACT_APP_ADMIN_PASSWORD;
 const privateKey = process.env.REACT_APP_PRIVATE_KEY;
 const providerUrl = process.env.REACT_APP_PROVIDER_URL;
+const networkId = process.env.REACT_APP_NETWORK_ID;
 // Validación de variables de entorno
 if (!adminPassword) {
-  console.error("Falta adminPassword. Verifica tu archivo .env.");
+  window.alert("Falta adminPassword. Verifica tu archivo .env.");
   process.exit(1);
 }
 if (!providerUrl) {
-  console.error("Falta providerUrl. Verifica tu archivo .env.");
+  window.alert("Falta providerUrl. Verifica tu archivo .env.");
   process.exit(1);
 }
 if (!privateKey) {
-  console.error("Falta privateKey. Verifica tu archivo .env.");
+  window.alert("Falta privateKey. Verifica tu archivo .env.");
   process.exit(1);
 }
 
@@ -34,13 +35,12 @@ const provider = new ethers.providers.JsonRpcProvider(providerUrl);
 const wallet = new ethers.Wallet(privateKey, provider);
 
 function Home() {
-  const [account, setAccount] = useState("");
+  const [account] = useState("");
   const [loading, setLoading] = useState(false);
   const [nombre, setNombre] = useState("");
   const [rut, setRut] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [contract, setContract] = useState(null);
-  const [contractAddress, setContractAddress] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [direccionUsuario, setDireccionUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
@@ -63,34 +63,24 @@ function Home() {
       navigate("/inicioadmin");
       handleCloseAdminLoginModal();
     } else {
-      alert("Contraseña incorrecta!");
+      window.alert("Contraseña incorrecta!");
     }
   }
 
   async function loadBlockchainData() {
     try {
       setLoading(true);
-      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = cuentaFactory.networks[networkId];
-
       if (networkData) {
         const abi = cuentaFactory.abi;
         const address = networkData.address;
         const contract = new ethers.Contract(address, abi, wallet);
         setContract(contract);
-        console.log(
-          "El contrato está funcionando bien. Address: ",
-          address,
-          " Abi: ",
-          abi,
-          " Wallet: ",
-          wallet
-        );
       } else {
         window.alert("¡El Smart Contract no se ha desplegado en la red!");
       }
     } catch (error) {
-      console.error("Error al cargar los datos de la blockchain: ", error);
+      window.alert("Error al cargar los datos de la blockchain: ", error);
     } finally {
       setLoading(false);
     }
@@ -124,15 +114,11 @@ function Home() {
       // Ahora puedes llamar a las funciones del contrato Cuenta
       let direccion = await nuevaCuenta.obtenerDireccion();
 
-      console.log(
-        "El valor _direccion del nuevo contrato Cuenta es: ",
-        direccion
-      );
 
       // Devuelve el valor _direccion y la dirección del nuevo contrato Cuenta
       return { direccion, nuevaCuentaDireccion };
     } catch (error) {
-      console.error("Error al crear una nueva cuenta: ", error);
+      window.alert("Error al crear una nueva cuenta: ", error);
     } finally {
       setLoading(false);
     }
@@ -144,7 +130,6 @@ function Home() {
     let texto = `${nombre}${rut}${fechaNacimiento}`;
     texto = texto.replace("-", "");
     texto = texto.replace("-", "");
-    console.log(texto);
 
     // Llama a la función crearCuenta del contrato
     try {
@@ -172,7 +157,6 @@ function Home() {
     try {
       setLoading(true);
       // Aquí es donde instancias el contrato CuentaFactory y llamas a la función para obtener la dirección del contrato
-      const networkId = 5777; // Ganache -> 5777, Rinkeby -> 4, BSC -> 97
       const networkData = cuentaFactory.networks[networkId];
 
       if (networkData) {
@@ -209,7 +193,7 @@ function Home() {
         window.alert("¡El Smart Contract no se ha desplegado en la red!");
       }
     } catch (error) {
-      console.error("Error al iniciar sesión: ", error);
+      window.alert("Error al iniciar sesión: ", error);
     } finally {
       setLoading(false);
     }
